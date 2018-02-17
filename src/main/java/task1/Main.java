@@ -7,9 +7,21 @@ import java.util.logging.Logger;
 
 public class Main {
 
+
+    static class HelloWorld {
+        private static int column = 0;
+        HelloWorld() {
+            column++;
+        }
+    }
+
     private static Logger log = Logger.getLogger(Main.class.getName());
 
-    public static void main(String[] args) {
+    public static void main(String... args) {
+        for (int i = 0; i < 10; i++) {
+            HelloWorld helloWorld = new HelloWorld();
+        }
+        System.out.println(HelloWorld.column);
     }
 
 }
