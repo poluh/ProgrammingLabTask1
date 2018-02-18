@@ -3,12 +3,12 @@ apply plugin: 'idea'
 apply plugin: 'application'
 
 buildscript {
-	repositories {
-		mavenCentral()
-	}
-	dependencies {
-		classpath 'org.junit.platform:junit-platform-gradle-plugin:1.0.3'
-	}
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'org.junit.platform:junit-platform-gradle-plugin:1.0.3'
+    }
 }
 
 apply plugin: 'org.junit.platform.gradle.plugin'
@@ -20,7 +20,7 @@ repositories {
 ext.junitPlatformVersion = '1.0.3'
 ext.junitJupiterVersion  = '5.0.3'
 
-mainClassName = "main.java.task6.auxiliaryClasses.Main"
+mainClassName = "Main"
 
 dependencies {
     compile group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.10.0'
