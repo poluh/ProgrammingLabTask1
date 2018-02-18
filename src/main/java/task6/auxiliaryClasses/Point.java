@@ -1,9 +1,9 @@
-package main.java.task6.auxiliaryClasses;
+package task6.auxiliaryClasses;
 
 public class Point {
-    private int x, y;
+    private double x, y;
 
-    public Point(int x, int y) {
+    public Point(double x, double y) {
         this.x = x;
         this.y = y;
     }
@@ -12,11 +12,11 @@ public class Point {
         return Math.sqrt(Math.pow(other.x - this.x, 2) + Math.pow(other.y - this.y, 2));
     }
 
-    public int getX() {
+    public double getX() {
         return x;
     }
 
-    public int getY() {
+    public double getY() {
         return y;
     }
 

@@ -1,11 +1,8 @@
-package main.java.task6.auxiliaryClasses;
+package task6.auxiliaryClasses;
 
-import task2.Main;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 public class Schedule {
     private List<Point> collectionPoint = new ArrayList<>();
@@ -41,6 +38,23 @@ public class Schedule {
             }
         }
         return answer;
+    }
+
+    public Point searchValue(int argument) {
+        int answer = 0;
+
+        for (int i = 0; i < collectionPoint.size(); i++) {
+            double bufAnswer = 1;
+            Point pointI = collectionPoint.get(i);
+            for (int j = 0; j < collectionPoint.size(); j++) {
+                if (i != j) {
+                    Point pointJ = collectionPoint.get(j);
+                    bufAnswer *= (argument - pointJ.getX()) / (pointI.getX() - pointJ.getX());
+                }
+            }
+            answer += bufAnswer * pointI.getY();
+        }
+        return new Point(argument, answer);
     }
 
     @Override

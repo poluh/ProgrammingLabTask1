@@ -20,7 +20,7 @@ repositories {
 ext.junitPlatformVersion = '1.0.3'
 ext.junitJupiterVersion  = '5.0.3'
 
-mainClassName = "Main"
+mainClassName = "main.java.task6.auxiliaryClasses.Main"
 
 dependencies {
     compile group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.10.0'
