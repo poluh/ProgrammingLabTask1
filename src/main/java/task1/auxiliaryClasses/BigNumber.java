@@ -4,7 +4,10 @@ import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
+import static java.lang.Integer.max;
 import static java.lang.Integer.parseInt;
 
 public class BigNumber {
@@ -14,31 +17,32 @@ public class BigNumber {
     private byte[] number;
     private boolean negative;
 
+    private void create(byte[] number, boolean negative) {
+        try {
+            this.number = number;
+            this.negative = negative;
+            log.log(Level.INFO, "Create new BigNumber={0}", this);
+        } catch (NumberFormatException ex) {
+            log.log(Level.SEVERE, "Exception: Invalid format number({0}).", number);
+        }
+    }
+
     public BigNumber(String number) {
         if (number.matches("-?\\d+")) {
-            log.info("Create new BigNumber");
-            this.negative = number.toCharArray()[0] == '-';
-            log.info(negative ? "Number is negative" : "Number is not negative");
-            char[] buf = number.toCharArray();
-            this.number = new byte[number.length() - (this.negative ? 1 : 0)];
-            int byteIndex = 0;
-            for (int i = this.negative ? 1  : 0; i < number.length(); i++) {
-                this.number[byteIndex] = Byte.parseByte(String.valueOf(buf[i]));
-                byteIndex++;
+            boolean negative = number.charAt(0) == '-';
+            byte[] bytes = new byte[number.length() - (negative ? 1 : 0)];
+            int offset = negative ? 1 : 0;
+            for (int i = offset; i < number.length(); i++) {
+                bytes[i - offset] = Byte.parseByte(String.valueOf(number.charAt(i)));
             }
+            create(bytes, negative);
         } else {
-            log.log(Level.SEVERE, "Unknown format number {0}", number);
             throw new NumberFormatException();
         }
     }
 
     private BigNumber(byte[] number, boolean negative) {
-        log.info("Create new BigNumber");
-        this.number = number;
-        this.negative = negative;
-    }
-
-    private BigNumber() {
+        create(number, negative);
     }
 
     public String getNumber() {
@@ -58,52 +62,37 @@ public class BigNumber {
     }
 
     public void setNumber(String number) {
-        char[] charsNum = number.toCharArray();
-        if (charsNum[0] == '-') this.negative = true;
-        byte[] bytesNum = new byte[charsNum.length - (this.negative ? 1 : 0)];
-        for (int i = 0; i < charsNum.length; i++) {
-            bytesNum[i] = Byte.parseByte(String.valueOf(charsNum[i]));
-        }
-        this.setNumber(bytesNum);
+        this.setNumber(new BigNumber(number).getBytes());
     }
 
     public int length() {
         return this.number.length;
     }
 
-    private byte[] appendZero(int column, boolean beginning) {
-        StringBuilder zeros = new StringBuilder();
-        for (int i = 0; i < column; i++) {
-            zeros.append("0");
-        }
-        char[] buf;
-        if (beginning) {
-            buf = (zeros.toString() + this.getNumber()).toCharArray();
-        } else buf =  (this.getNumber() + zeros.toString()).toCharArray();
-        byte[] answer = new byte[buf.length];
-        for (int i = 0; i < answer.length; i++) {
-            answer[i] = Byte.parseByte(String.valueOf(buf[i]));
-        }
-
-        return answer;
+    private byte[] appendZeros(int quantity, boolean atFirst) {
+        String zeros = IntStream.range(0, quantity).mapToObj(i -> "0").collect(Collectors.joining());
+        BigNumber buf = new BigNumber("0");
+        buf.setNumber(!atFirst ? this.getNumber().concat(zeros) : zeros.concat(this.getNumber()));
+        return buf.getBytes();
     }
 
-    public boolean isGreater(BigNumber other) {
-        if ((this.isNegative() && !other.isNegative()) || (!this.isNegative() && other.isNegative())) {
-            return ((this.isNegative() && !other.isNegative()) || (!this.isNegative() && other.isNegative()));
-        }
+    public boolean compareTo(BigNumber other) {
 
-        if (this.length() == other.length()) {
-            byte[] bufThis = this.number;
-            byte[] bufOther = other.number;
+        if (this.isNegative() == other.isNegative()) {
+            boolean bothNegative = this.isNegative() && other.isNegative();
+            if (this.length() == other.length()) {
+                byte[] bufThis = this.number;
+                byte[] bufOther = other.number;
 
-            for (int i = 0; i < this.length(); i++) {
-                if (bufThis[i] != bufOther[i]) {
-                    return bufThis[i] > bufOther[i];
+                for (int i = 0; i < this.length(); i++) {
+                    if (bufThis[i] != bufOther[i]) {
+                        return bothNegative ? bufThis[i] < bufOther[i] : bufThis[i] > bufOther[i];
+                    }
                 }
-            }
+            } else
+                return bothNegative ? this.length() < other.length() : this.length() > other.length();
         }
-        return this.isNegative() && other.isNegative() ? this.length() < other.length() : this.length() > other.length();
+        return other.isNegative();
     }
 
     public boolean isNegative() {
@@ -119,7 +108,7 @@ public class BigNumber {
     }
 
     public void round(int border) {
-        if (border > this.length()) this.setNumber(this.appendZero(border - this.length(), false));
+        if (border > this.length()) this.setNumber(this.appendZeros(border - this.length(), false));
         byte[] bytes = this.getBytes();
 
         this.setNumber(this.getNumber().substring(0, border + 1));
@@ -137,11 +126,11 @@ public class BigNumber {
     }
 
     public static BigNumber maxOf(BigNumber first, BigNumber second) {
-        return first.isGreater(second) ? first : second;
+        return first.compareTo(second) ? first : second;
     }
 
     public static BigNumber minOf(BigNumber first, BigNumber second) {
-        return first.isGreater(second) ? second : first;
+        return first.compareTo(second) ? second : first;
     }
 
     public BigNumber plus(int other) {
@@ -155,35 +144,34 @@ public class BigNumber {
 
     public BigNumber plus(BigNumber other, boolean factional) {
         if (this.isNegative() && !other.isNegative()) {
-            this.delNegative();
-            if (maxOf(this, other) == this) {
-                return new BigNumber(maxOf(this, other).minus(minOf(this, other)).number, true);
+            BigNumber bufThis = this;
+            bufThis.delNegative();
+            if (bufThis.compareTo(other)) {
+                return new BigNumber(maxOf(bufThis, other).minus(minOf(bufThis, other)).number, true);
             } else {
-                BigNumber answer = this.minus(other);
+                BigNumber answer = bufThis.minus(other);
                 answer.delNegative();
                 return answer;
             }
         }
         if (other.isNegative() && !this.isNegative()) {
-            other.delNegative();
-            return this.minus(other);
+            BigNumber bufOther = new BigNumber(other.getBytes(), false);
+            return this.minus(bufOther);
         }
         if (this.isNegative() && other.isNegative()) {
-            this.delNegative();
-            other.delNegative();
-            return new BigNumber(this.plus(other).number, true);
+            BigNumber bufThis = this;
+            BigNumber bufOther;
+            bufOther = other;
+            bufThis.delNegative();
+            bufOther.delNegative();
+            return new BigNumber(bufThis.plus(bufOther).number, true);
         }
 
-        int length = this.length() > other.length() ? this.length() : other.length();
+        int length = max(this.length(), other.length());
         byte[] bufThis;
         byte[] bufOther;
-        if (!factional) {
-            bufThis = this.appendZero(Math.abs(this.length() - length), true);
-            bufOther = other.appendZero(Math.abs(other.length() - length), true);
-        } else {
-            bufThis = this.appendZero(Math.abs(this.length() - length), false);
-            bufOther = other.appendZero(Math.abs(other.length() - length), false);
-        }
+        bufThis = this.appendZeros(Math.abs(this.length() - length), !factional);
+        bufOther = other.appendZeros(Math.abs(other.length() - length), !factional);
 
         StringBuilder bufAnswer = new StringBuilder();
         int addedBuf = 0;
@@ -216,33 +204,37 @@ public class BigNumber {
     public BigNumber minus(BigNumber other, boolean factional) {
 
         if (this.isNegative() && !other.isNegative()) {
-            this.delNegative();
-            return new BigNumber(other.plus(this).number, true);
+            BigNumber bufThis = this;
+            bufThis.delNegative();
+            return new BigNumber(other.plus(bufThis).number, true);
         }
         if (other.isNegative() && !this.isNegative()) {
-            other.delNegative();
-            return this.minus(other);
+            BigNumber otherBuf = new BigNumber(other.getBytes(), false);
+            return this.minus(otherBuf);
         }
         if (this.isNegative() && other.isNegative()) {
-            this.delNegative();
-            other.delNegative();
-            return other.minus(this);
+            BigNumber bufThis = this;
+            BigNumber bufOther;
+            bufOther = other;
+            bufThis.delNegative();
+            bufOther.delNegative();
+            return bufOther.minus(bufThis);
         }
 
         if (Arrays.equals(this.number, other.number)) return new BigNumber("0");
 
-        StringBuilder bufAnswer = new StringBuilder();
+        StringBuilder bufNumber = new StringBuilder();
         byte[] minuend;
         byte[] subtrahend;
         int length = Integer.max(this.length(), other.length());
         if (!factional) {
             minuend = maxOf(this, other).number;
             subtrahend = minOf(this, other)
-                    .appendZero(Math.abs(minOf(this, other).length() - length), true);
+                    .appendZeros(Math.abs(minOf(this, other).length() - length), true);
         } else {
-            BigNumber isMinuend = new BigNumber(this.appendZero(length - this.length(), false),
+            BigNumber isMinuend = new BigNumber(this.appendZeros(length - this.length(), false),
                     this.negative);
-            BigNumber isSubtrahend = new BigNumber(other.appendZero(length - other.length(), false),
+            BigNumber isSubtrahend = new BigNumber(other.appendZeros(length - other.length(), false),
                     other.negative);
             minuend = maxOf(isMinuend, isSubtrahend).number;
             subtrahend = minOf(isMinuend, isSubtrahend).number;
@@ -254,20 +246,20 @@ public class BigNumber {
                 addedNum = addedNum + 10;
                 addedBuf = 1;
             } else addedBuf = 0;
-            bufAnswer.append(addedNum);
+            bufNumber.append(addedNum);
         }
 
         if (!factional) {
-            return new BigNumber((this.isGreater(other) ? "" : "-") + removeZeros(bufAnswer.reverse().toString()));
+            return new BigNumber((this.compareTo(other) ? "" : "-") + removeZeros(bufNumber.reverse().toString()));
         } else {
-            return new BigNumber((this.isGreater(other) ? "" : "-") + bufAnswer.reverse().toString());
+            return new BigNumber((this.compareTo(other) ? "" : "-") + bufNumber.reverse().toString());
         }
     }
 
     private BigNumber timesOneNum(int num) {
         if (num == 1) return this;
         if (num == 0) {
-            return new BigNumber(appendZero(1, false), false);
+            return new BigNumber(appendZeros(1, false), false);
         }
 
         BigNumber answer = new BigNumber("0");
@@ -288,26 +280,28 @@ public class BigNumber {
 
         BigNumber bufAnswer = new BigNumber("0");
         boolean negative = (this.isNegative() && !other.isNegative()) || (!this.isNegative() && other.isNegative());
-        this.delNegative();
-        other.delNegative();
+        BigNumber bufThis = this;
+        BigNumber bufOther = other;
+        bufThis.delNegative();
+        bufOther.delNegative();
 
         Pattern pattern = Pattern.compile("(\\[1, (0, )*0])|(10+)");
         BigNumber big;
         BigNumber zeros;
-        if (pattern.matcher(other.toString()).matches() || pattern.matcher(this.toString()).matches()) {
-            big = pattern.matcher(other.toString()).matches() ? this : other;
-            zeros = big == this ? other : this;
-            bufAnswer = new BigNumber(big.appendZero(zeros.length() - 1, false), false);
+        if (pattern.matcher(bufOther.toString()).matches() || pattern.matcher(bufThis.toString()).matches()) {
+            big = pattern.matcher(bufOther.toString()).matches() ? bufThis : bufOther;
+            zeros = big == bufThis ? bufOther : bufThis;
+            bufAnswer = new BigNumber(big.appendZeros(zeros.length() - 1, false), false);
             if (negative) bufAnswer.negative = true;
             return bufAnswer;
         }
 
-        BigNumber bigNumber = maxOf(this, other);
-        byte[] otherBuf = minOf(this, other).number;
+        BigNumber bigNumber = maxOf(bufThis, bufOther);
+        byte[] otherBuf = minOf(bufThis, bufOther).number;
 
         for (int i = otherBuf.length - 1; i >= 0; i--) {
             BigNumber resultTimes = bigNumber.timesOneNum(parseInt(String.valueOf(otherBuf[i])));
-            resultTimes.setNumber(resultTimes.appendZero(otherBuf.length - i - 1, false));
+            resultTimes.setNumber(resultTimes.appendZeros(otherBuf.length - i - 1, false));
             bufAnswer = bufAnswer.plus(resultTimes);
         }
         if (negative) bufAnswer.negative = true;
@@ -316,15 +310,11 @@ public class BigNumber {
 
     @Override
     public boolean equals(Object obj) {
-        return Arrays.equals(this.number, ((BigNumber) obj).number);
+        return getClass() == obj.getClass() && Arrays.equals(this.number, ((BigNumber) obj).number);
     }
 
     @Override
     public String toString() {
-        StringBuilder answer = new StringBuilder();
-        for (byte element : this.number) {
-            answer.append(element);
-        }
-        return this.negative ? "-" + answer.toString() : answer.toString();
+        return this.getNumber();
     }
 }

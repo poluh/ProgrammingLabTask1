@@ -18,7 +18,8 @@ public class BigFractional {
             this.fraction = fraction;
             log.log(Level.INFO, "Create new BigFractional = {0}", this);
         } catch (NumberFormatException ex) {
-            log.log(Level.SEVERE, "Exception: Invalid format number.");
+            String[] strings = {wholePart.toString(), fraction.toString()};
+            log.log(Level.SEVERE, "Exception: Invalid format number({0}.{1}).", strings);
         }
     }
 
