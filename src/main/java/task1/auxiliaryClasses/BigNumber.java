@@ -311,7 +311,7 @@ public class BigNumber {
 
     @Override
     public boolean equals(Object obj) {
-        return getClass() == obj.getClass() && Arrays.equals(this.number, ((BigNumber) obj).number);
+        return this.getClass() == obj.getClass() && Arrays.equals(this.number, ((BigNumber) obj).number);
     }
 
     @Override
