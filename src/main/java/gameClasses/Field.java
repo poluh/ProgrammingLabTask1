@@ -20,4 +20,20 @@ public class Field {
         if (value > 0 && value < 3)
         this.cells[column][row] = value;
     }
+
+    private int[] getOneLine() {
+
+        int cellX;
+        int cellY;
+
+        for (int i = 0; i < this.cells.length; i++) {
+            for (int j = 0; j < this.cells.length; j++) {
+
+            }
+        }
+    }
+
+    private boolean searchWinner(Player player) {
+
+    }
 }
