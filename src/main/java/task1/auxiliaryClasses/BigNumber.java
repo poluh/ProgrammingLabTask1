@@ -9,7 +9,7 @@ import static java.lang.Integer.parseInt;
 
 public class BigNumber {
 
-    private static Logger log = Logger.getLogger(BigFactional.class.getName());
+    private static Logger log = Logger.getLogger(BigFractional.class.getName());
 
     private byte[] number;
     private boolean negative;
@@ -26,10 +26,9 @@ public class BigNumber {
                 this.number[byteIndex] = Byte.parseByte(String.valueOf(buf[i]));
                 byteIndex++;
             }
-            log.info("Number=" + this.toString());
         } else {
-            log.log(Level.SEVERE, "Exception: Invalid format number.");
-            throw new NumberFormatException("Unknown number. Check symbols.");
+            log.log(Level.SEVERE, "Unknown format number {0}", number);
+            throw new NumberFormatException();
         }
     }
 
@@ -37,7 +36,6 @@ public class BigNumber {
         log.info("Create new BigNumber");
         this.number = number;
         this.negative = negative;
-        log.info("Number=" + this.toString());
     }
 
     private BigNumber() {
@@ -118,6 +116,20 @@ public class BigNumber {
 
     public void setNegative(boolean negative) {
         this.negative = negative;
+    }
+
+    public void round(int border) {
+        if (border > this.length()) this.setNumber(this.appendZero(border - this.length(), false));
+        byte[] bytes = this.getBytes();
+
+        this.setNumber(this.getNumber().substring(0, border + 1));
+        if (bytes[border] >= 5) {
+            this.setNumber(this.plus(10 - bytes[border]).getNumber());
+        } else {
+            bytes[border] = 0;
+            this.setNumber(bytes);
+        }
+        this.setNumber(this.getNumber().substring(0, border));
     }
 
     public boolean isEmpty() {

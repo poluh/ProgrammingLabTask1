@@ -52,6 +52,11 @@ class BigNumberTest {
         assertEquals(new BigNumber("88854654"), new BigNumber("-34234").plus(new BigNumber("88888888")));
         assertEquals(new BigNumber("-3482"), new BigNumber("-3494").plus(new BigNumber("12")));
         assertEquals(new BigNumber("-123"), new BigNumber("-23").plus(new BigNumber("-100")));
+
+        BigNumber a = new BigNumber("10");
+        BigNumber b = new BigNumber("-5");
+        BigNumber c = a.plus(b);
+        assertEquals(new BigNumber("0"), b.plus(c));
     }
 
     @Test
