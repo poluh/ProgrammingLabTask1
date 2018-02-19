@@ -279,9 +279,10 @@ public class BigNumber {
         if (other.number == new byte[]{'2'}) return this.plus(this);
 
         BigNumber bufAnswer = new BigNumber("0");
-        boolean negative = (this.isNegative() && !other.isNegative()) || (!this.isNegative() && other.isNegative());
+        boolean negative = this.isNegative() ^ other.isNegative();
         BigNumber bufThis = this;
-        BigNumber bufOther = other;
+        BigNumber bufOther;
+        bufOther = other;
         bufThis.delNegative();
         bufOther.delNegative();
 
@@ -315,6 +316,6 @@ public class BigNumber {
 
     @Override
     public String toString() {
-        return this.getNumber();
+        return (this.isNegative() ? "-" : "") + this.getNumber();
     }
 }

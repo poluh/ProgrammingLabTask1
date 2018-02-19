@@ -26,7 +26,7 @@ class BigNumberTest {
                 BigNumber.maxOf(new BigNumber("112312321323"), new BigNumber("112312321322")));
         assertEquals(new BigNumber("13213123123123"),
                 BigNumber.maxOf(new BigNumber("13213123123123"), new BigNumber("-13243243242343243423434")));
-        assertEquals(new BigNumber("-54545624532"),
+        assertEquals(new BigNumber("3234872847438"),
                 BigNumber.maxOf(new BigNumber("-54545624532"), new BigNumber("3234872847438")));
         assertEquals(new BigNumber("-4325244261346"),
                 BigNumber.maxOf(new BigNumber("-4325244261346"), new BigNumber("-9852982598423938")));
