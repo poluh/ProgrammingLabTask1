@@ -1,28 +1,30 @@
 package task1.auxiliaryClasses.Collection;
 
-public class IntegerObject {
+public class IntegerObject implements CollectionBigNumber<Integer> {
+
     private int storage = -2;
     private int size = -1;
 
-    public IntegerObject() {}
+    public IntegerObject() {
+    }
 
+    @Override
     public void add(int added) {
         if (added < 0) throw new NumberFormatException("Only positive numbers are allowed");
 
         if (storage == -2) {
-            storage = added == 0 ? -1 : added;
-            size = 1;
-        } else if (size != 9){
-            storage = storage * 10 + (storage > 0 ? added : -added);
-            size++;
-        } else {
-            throw new NumberFormatException("The storage is full");
+            this.storage = added == 0 ? -1 : added;
+            this.size = 1;
+        } else if (this.size < 10) {
+            this.storage = this.storage * 10 + (this.storage > 0 ? added : -added);
+            this.size++;
         }
     }
 
-    public int get(int index) {
+    @Override
+    public int get(Integer index) {
         index++;
-        if (index < 0 || index > 9 || index > this.size - 1) {
+        if (index < 0 || index > 10 || index > this.size - 1) {
             throw new IllegalArgumentException("Invalid index");
         }
         int storage = this.storage;
@@ -36,12 +38,22 @@ public class IntegerObject {
         return storage < 0 ? answer * -1 : answer;
     }
 
-    public int getSize() {
+    @Override
+    public void remove(Integer index) {
+
+    }
+
+    @Override
+    public int size() {
         return size;
     }
 
     public int getStorage() {
         return storage;
+    }
+
+    public boolean isCompleted() {
+        return this.size > 8;
     }
 
     @Override
