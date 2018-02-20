@@ -15,6 +15,6 @@ public class Main {
             integerObject.add(0);
         }
         System.out.println(integerObject);
-        System.out.println(integerObject.get(0));
+        System.out.println();
     }
 }

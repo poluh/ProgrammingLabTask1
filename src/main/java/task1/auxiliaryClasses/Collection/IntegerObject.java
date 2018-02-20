@@ -22,6 +22,9 @@ public class IntegerObject {
 
     public int get(int index) {
         index++;
+        if (index < 0 || index > 9 || index > this.size - 1) {
+            throw new IllegalArgumentException("Invalid index");
+        }
         int storage = this.storage;
         int size = this.size;
         while (size != index) {
@@ -43,6 +46,8 @@ public class IntegerObject {
 
     @Override
     public String toString() {
-        return String.valueOf(getStorage());
+        int thisStorage = this.getStorage();
+        return thisStorage > 0 ? String.valueOf(thisStorage) : ("0".concat(String.valueOf(thisStorage).substring(2)));
     }
+
 }
