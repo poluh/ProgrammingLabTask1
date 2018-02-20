@@ -10,7 +10,7 @@ import java.util.stream.IntStream;
 import static java.lang.Integer.max;
 import static java.lang.Integer.parseInt;
 
-public class BigNumber {
+public class BigNumber implements Comparable<BigNumber> {
 
     private static Logger log = Logger.getLogger(BigFractional.class.getName());
 
@@ -76,25 +76,6 @@ public class BigNumber {
         return buf.getBytes();
     }
 
-    public boolean compareTo(BigNumber other) {
-
-        if (this.isNegative() == other.isNegative()) {
-            boolean bothNegative = this.isNegative() && other.isNegative();
-            if (this.length() == other.length()) {
-                byte[] bufThis = this.number;
-                byte[] bufOther = other.number;
-
-                for (int i = 0; i < this.length(); i++) {
-                    if (bufThis[i] != bufOther[i]) {
-                        return bothNegative ? bufThis[i] < bufOther[i] : bufThis[i] > bufOther[i];
-                    }
-                }
-            } else
-                return bothNegative ? this.length() < other.length() : this.length() > other.length();
-        }
-        return other.isNegative();
-    }
-
     public boolean isNegative() {
         return this.negative;
     }
@@ -126,11 +107,11 @@ public class BigNumber {
     }
 
     public static BigNumber maxOf(BigNumber first, BigNumber second) {
-        return first.compareTo(second) ? first : second;
+        return first.compareTo(second) > 0 ? first : second;
     }
 
     public static BigNumber minOf(BigNumber first, BigNumber second) {
-        return first.compareTo(second) ? second : first;
+        return first.compareTo(second) > 0 ? second : first;
     }
 
     public BigNumber plus(int other) {
@@ -146,7 +127,7 @@ public class BigNumber {
         if (this.isNegative() && !other.isNegative()) {
             BigNumber bufThis = this;
             bufThis.delNegative();
-            if (bufThis.compareTo(other)) {
+            if (bufThis.compareTo(other) > 0) {
                 return new BigNumber(maxOf(bufThis, other).minus(minOf(bufThis, other)).number, true);
             } else {
                 BigNumber answer = bufThis.minus(other);
@@ -250,9 +231,9 @@ public class BigNumber {
         }
 
         if (!factional) {
-            return new BigNumber((this.compareTo(other) ? "" : "-") + removeZeros(bufNumber.reverse().toString()));
+            return new BigNumber((this.compareTo(other) > 0 ? "" : "-") + removeZeros(bufNumber.reverse().toString()));
         } else {
-            return new BigNumber((this.compareTo(other) ? "" : "-") + bufNumber.reverse().toString());
+            return new BigNumber((this.compareTo(other) > 0 ? "" : "-") + bufNumber.reverse().toString());
         }
     }
 
@@ -317,5 +298,34 @@ public class BigNumber {
     @Override
     public String toString() {
         return (this.isNegative() ? "-" : "") + this.getNumber();
+    }
+
+    @Override
+    public int compareTo(BigNumber other) {
+        if (this.isNegative() == other.isNegative()) {
+            boolean bothNegative = this.isNegative() && other.isNegative();
+            if (this.length() == other.length()) {
+                byte[] bufThis = this.number;
+                byte[] bufOther = other.number;
+
+                for (int i = 0; i < this.length(); i++) {
+                    if (bufThis[i] != bufOther[i]) {
+                        if (bothNegative) {
+                            return bufThis[i] < bufOther[i] ? 1 : -1;
+                        } else {
+                            return bufThis[i] > bufOther[i] ? 1 : -1;
+                        }
+                    }
+                }
+            } else{
+                if (bothNegative) {
+                    return this.length() < other.length() ? 1 : -1;
+                } else {
+                    return this.length() > other.length() ? 1 : -1;
+                }
+            }
+
+        }
+        return other.isNegative() ? 1 : -1;
     }
 }

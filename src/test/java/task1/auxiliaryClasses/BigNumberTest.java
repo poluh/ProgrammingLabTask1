@@ -8,10 +8,10 @@ class BigNumberTest {
 
     @Test
     void isGreater() {
-        assertTrue(new BigNumber("112312321323").compareTo(new BigNumber("112312321322")));
-        assertTrue(new BigNumber("13213123123123").compareTo(new BigNumber("-13243243242343243423434")));
-        assertFalse(new BigNumber("-54545624532").compareTo(new BigNumber("3234872847438")));
-        assertTrue(new BigNumber("-4325244261346").compareTo(new BigNumber("-9852982598423938")));
+        assertEquals(1, new BigNumber("112312321323").compareTo(new BigNumber("112312321322")));
+        assertEquals(1, new BigNumber("13213123123123").compareTo(new BigNumber("-13243243242343243423434")));
+        assertEquals(-1, new BigNumber("-54545624532").compareTo(new BigNumber("3234872847438")));
+        assertEquals(1, new BigNumber("-4325244261346").compareTo(new BigNumber("-9852982598423938")));
     }
 
     @Test
