@@ -14,13 +14,12 @@ public class Main {
 
     public static void main(String[] args) {
 
-        ArrayBigNumber arrayBigNumber = new ArrayBigNumber("00");
-        IntegerObject integerObject = new IntegerObject();
-        integerObject.add(0);
-        integerObject.add(0);
-
-//        System.out.println(bigFractional);
+        char[] problem = "112312321322".toCharArray();
+        ArrayBigNumber arrayBigNumber = new ArrayBigNumber();
+        for (char ch : problem) arrayBigNumber.add(ch);
         System.out.println(arrayBigNumber);
-        System.out.println(integerObject);
+        System.out.println("112312321323");
+
+
     }
 }

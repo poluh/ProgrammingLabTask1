@@ -90,8 +90,7 @@ public class ArrayBigNumber implements CollectionBigNumber<Integer> {
 
     @Override
     public String toString() {
-        return this.storage.toString();
-        //return this.storage.stream().map(String::valueOf).collect(Collectors.joining());
+        return this.storage.stream().map(String::valueOf).collect(Collectors.joining());
     }
 
     @Override

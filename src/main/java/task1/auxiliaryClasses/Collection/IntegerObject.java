@@ -5,21 +5,23 @@ public class IntegerObject implements CollectionBigNumber<Integer> {
     private int storage = -2;
     private int size = -1;
 
-    public IntegerObject() {
+    IntegerObject() {
     }
 
     IntegerObject(Integer added) {
         this.add(added);
     }
 
+
     @Override
     public void add(Integer added) {
         if (added < 0 || added > 9) throw new NumberFormatException("Only positive/single-character numbers are allowed");
+        if (this.size > 8) throw new IllegalArgumentException("Container overflow");
 
         if (storage == -2) {
             this.storage = (added == 0) ? -1 : added;
             this.size = 1;
-        } else if (this.size < 10) {
+        } else {
             this.storage = this.storage * 10 + (this.storage > 0 ? added : -added);
             this.size++;
         }
@@ -34,7 +36,7 @@ public class IntegerObject implements CollectionBigNumber<Integer> {
 
     @Override
     public Integer get(Integer index) {
-        if (index < 0 || index > 10 || index > this.size - 1) {
+        if (index < 0 || index > 8 || index > this.size) {
             throw new IllegalArgumentException("Invalid index " + index + " real size " + this.size);
         }
         Integer storage = this.storage;
@@ -50,7 +52,7 @@ public class IntegerObject implements CollectionBigNumber<Integer> {
 
     @Override
     public void set(Integer index, Integer object) {
-        if (index < 0 || index > 10 || index > this.size - 1) {
+        if (index < 0 || index > 8 || index > this.size) {
             throw new IllegalArgumentException("Invalid index");
         }
         double bufStorage = this.storage;
@@ -82,7 +84,7 @@ public class IntegerObject implements CollectionBigNumber<Integer> {
     }
 
     public boolean isCompleted() {
-        return this.size > 9;
+        return this.size > 8;
     }
 
     @Override
@@ -90,7 +92,7 @@ public class IntegerObject implements CollectionBigNumber<Integer> {
         Integer thisStorage = this.getStorage();
         String thisStorageStr = thisStorage.toString();
         if (thisStorage < 0) {
-            return (thisStorageStr.length() == 2) ? "0" : thisStorageStr.substring(2, thisStorageStr.length());
+            return (thisStorageStr.length() == 2) ? "0" : "0" + thisStorageStr.substring(2, thisStorageStr.length());
         }
         return thisStorageStr;
     }

@@ -2,7 +2,6 @@ package task1.auxiliaryClasses;
 
 import task1.auxiliaryClasses.Collection.ArrayBigNumber;
 
-import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
@@ -10,7 +9,6 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static java.lang.Integer.max;
-import static java.lang.Integer.parseInt;
 
 public class BigNumber implements Comparable<BigNumber> {
 
@@ -39,7 +37,7 @@ public class BigNumber implements Comparable<BigNumber> {
             }
             create(numbers, negative);
         } else {
-            throw new NumberFormatException();
+            throw new NumberFormatException("NUMBER = " + number);
         }
     }
 
@@ -53,6 +51,10 @@ public class BigNumber implements Comparable<BigNumber> {
 
     public ArrayBigNumber getArray() {
         return this.number;
+    }
+
+    public int get(int index) {
+        return this.number.get(index);
     }
 
     public void setNumber(ArrayBigNumber number) {
@@ -87,7 +89,7 @@ public class BigNumber implements Comparable<BigNumber> {
     }
 
     public void round(int border) {
-        if (border > this.length()) this.setNumber(this.appendZeros(border - this.length(), false));
+        if (border > this.length() - 1) this.setNumber(this.appendZeros(border - this.length() + 1, false));
         ArrayBigNumber numberArr = this.number;
 
         this.setNumber(this.getNumber().substring(0, border + 1));
@@ -97,7 +99,7 @@ public class BigNumber implements Comparable<BigNumber> {
             numberArr.set(border, 0);
             this.setNumber(numberArr);
         }
-        this.setNumber(this.getNumber().substring(0, border));
+        this.setNumber(this.getNumber().substring(0, border - 1));
     }
 
     public boolean isEmpty() {
@@ -156,7 +158,7 @@ public class BigNumber implements Comparable<BigNumber> {
         int addedBuf = 0;
         for (int i = length - 1; i >= 0; i--) {
             int addedNum = bufThis.get(i) +
-                    bufThis.get(i) + addedBuf;
+                    bufOther.get(i) + addedBuf;
             if (addedNum > 9) {
                 addedNum = addedNum - 10;
                 addedBuf = 1;
@@ -303,30 +305,25 @@ public class BigNumber implements Comparable<BigNumber> {
 
     @Override
     public int compareTo(BigNumber other) {
-        if (this.isNegative() == other.isNegative()) {
-            boolean bothNegative = this.isNegative() && other.isNegative();
-            if (this.length() == other.length()) {
-                ArrayBigNumber bufThis = this.number;
-                ArrayBigNumber bufOther = other.number;
-
-                for (int i = 0; i < this.length(); i++) {
-                    if (!bufThis.get(i).equals(bufOther.get(i))) {
-                        if (bothNegative) {
-                            return bufThis.get(i) < bufOther.get(i) ? 1 : -1;
-                        } else {
-                            return bufThis.get(i) > bufOther.get(i) ? 1 : -1;
-                        }
-                    }
-                }
+        boolean bothNegative = this.isNegative() && other.isNegative();
+        boolean oneNegative = this.isNegative() ^ other.isNegative();
+        if (this.length() != other.length()) {
+            if (bothNegative && !oneNegative) {
+                return this.length() < other.length() ? 1 : -1;
+            } else if (!oneNegative) {
+                return this.length() > other.length() ? 1 : -1;
             } else {
+                return other.isNegative() ? 1 : -1;
+            }
+        } else {
+            for (int i = 0; i < this.length(); ++i) {
                 if (bothNegative) {
-                    return this.length() < other.length() ? 1 : -1;
+                    return this.get(i) > other.get(i) ? 1 : -1;
                 } else {
-                    return this.length() > other.length() ? 1 : -1;
+                    return this.get(i) > other.get(i) ? -1 : 1;
                 }
             }
-
         }
-        return other.isNegative() ? 1 : -1;
+        return 0;
     }
 }
