@@ -14,12 +14,11 @@ public class Main {
 
     public static void main(String[] args) {
 
-        char[] problem = "1".toCharArray();
+
         ArrayBigNumber arrayBigNumber = new ArrayBigNumber();
-        for (char ch : problem) arrayBigNumber.add(ch);
-        System.out.println(arrayBigNumber);
-        System.out.println("112312321323");
-
-
+        for (int i = 0; i < 3; ++i) {
+            arrayBigNumber.add(i);
+        }
+        arrayBigNumber.add(arrayBigNumber.get(2));
     }
 }

@@ -8,8 +8,6 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import static java.lang.Integer.max;
-
 public class BigNumber implements Comparable<BigNumber> {
 
     private static Logger log = Logger.getLogger(BigFractional.class.getName());
@@ -45,6 +43,13 @@ public class BigNumber implements Comparable<BigNumber> {
         create(number, negative);
     }
 
+    public BigNumber copy() {
+        BigNumber answer = new BigNumber("0");
+        answer.negative = this.negative;
+        answer.number = this.number;
+        return answer;
+    }
+
     public String getNumber() {
         return this.number.toString();
     }
@@ -69,7 +74,7 @@ public class BigNumber implements Comparable<BigNumber> {
         return this.number.size();
     }
 
-    private ArrayBigNumber appendZeros(int quantity, boolean atFirst) {
+    public ArrayBigNumber appendZeros(int quantity, boolean atFirst) {
         String zeros = IntStream.range(0, quantity).mapToObj(i -> "0").collect(Collectors.joining());
         BigNumber buf = new BigNumber("0");
         buf.setNumber(!atFirst ? this.getNumber().concat(zeros) : zeros.concat(this.getNumber()));
@@ -81,7 +86,15 @@ public class BigNumber implements Comparable<BigNumber> {
     }
 
     public void delNegative() {
-        if (this.negative) this.negative = false;
+        this.negative = false;
+    }
+
+    public static BigNumber delNegative(BigNumber forDel) {
+        boolean forDelNegative = forDel.negative;
+        forDel.delNegative();
+        BigNumber answer = forDel.copy();
+        forDel.negative = forDelNegative;
+        return answer;
     }
 
     public void setNegative(boolean negative) {
@@ -89,11 +102,11 @@ public class BigNumber implements Comparable<BigNumber> {
     }
 
     public void round(int border) {
-         int roundNumber = this.get(border);
-         BigNumber difference = new BigNumber(String.valueOf((int) Math.pow(10 - roundNumber, this.length() - border - 1)));
-         if (roundNumber >= 5) {
-             this.plus(difference);
-         } else this.minus(difference);
+        int roundNumber = this.get(border);
+        BigNumber difference = new BigNumber(String.valueOf((int) Math.pow(10 - roundNumber, this.length() - border - 1)));
+        if (roundNumber >= 5) {
+            this.plus(difference);
+        } else this.minus(difference);
     }
 
     public boolean isEmpty() {
@@ -118,50 +131,38 @@ public class BigNumber implements Comparable<BigNumber> {
 
 
     public BigNumber plus(BigNumber other, boolean factional) {
-        if (this.isNegative() && !other.isNegative()) {
-            BigNumber bufThis = this;
-            bufThis.delNegative();
-            if (bufThis.compareTo(other) > 0) {
-                return new BigNumber(maxOf(bufThis, other).minus(minOf(bufThis, other)).number, true);
-            } else {
-                BigNumber answer = bufThis.minus(other);
-                answer.delNegative();
-                return answer;
+
+        boolean bothNegative = this.isNegative() && other.isNegative();
+        boolean oneNegative = this.isNegative() ^ other.isNegative();
+        BigNumber firstBuf;
+        BigNumber secondBuf;
+        if (oneNegative) {
+            firstBuf = delNegative(this);
+            secondBuf = delNegative(other);
+            return maxOf(firstBuf, secondBuf).minus(minOf(CfirstBuf, secondBuf));
+        } else {
+            int length = Math.max(this.length(), other.length());
+            firstBuf = new BigNumber(this.appendZeros(Math.abs(this.length() - length), true),
+                    false);
+            secondBuf = new BigNumber(other.appendZeros(Math.abs(other.length() - length), true),
+                    false);
+
+            StringBuilder numberBuf = new StringBuilder();
+            int remember = 0;
+            for (int i = length; i >= 1; i--) {
+                int addedNum = firstBuf.get(i) + secondBuf.get(i) + remember;
+
+                if (addedNum > 9) {
+                    addedNum -= 10;
+                    remember = 1;
+                } else {
+                    remember = 0;
+                }
+                numberBuf.append(addedNum);
             }
+            ArrayBigNumber number = new ArrayBigNumber(numberBuf.reverse().toString());
+            return bothNegative ? new BigNumber(number, true) : new BigNumber(number, false);
         }
-        if (other.isNegative() && !this.isNegative()) {
-            BigNumber bufOther = new BigNumber(other.number, false);
-            return this.minus(bufOther);
-        }
-        if (this.isNegative() && other.isNegative()) {
-            BigNumber bufThis = this;
-            BigNumber bufOther;
-            bufOther = other;
-            bufThis.delNegative();
-            bufOther.delNegative();
-            return new BigNumber(bufThis.plus(bufOther).number, true);
-        }
-
-        int length = max(this.length(), other.length());
-        ArrayBigNumber bufThis;
-        ArrayBigNumber bufOther;
-        bufThis = this.appendZeros(Math.abs(this.length() - length), !factional);
-        bufOther = other.appendZeros(Math.abs(other.length() - length), !factional);
-
-        StringBuilder bufAnswer = new StringBuilder();
-        int addedBuf = 0;
-        for (int i = length - 1; i >= 0; i--) {
-            int addedNum = bufThis.get(i) +
-                    bufOther.get(i) + addedBuf;
-            if (addedNum > 9) {
-                addedNum = addedNum - 10;
-                addedBuf = 1;
-            } else addedBuf = 0;
-
-            bufAnswer.append(addedNum);
-        }
-        if (addedBuf == 1) bufAnswer.append(1);
-        return new BigNumber(bufAnswer.reverse().toString());
     }
 
     private String removeZeros(String number) {

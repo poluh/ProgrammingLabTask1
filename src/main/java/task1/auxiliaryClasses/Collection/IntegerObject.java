@@ -5,7 +5,7 @@ public class IntegerObject implements CollectionBigNumber<Integer> {
     private int storage = -2;
     private int size = -1;
 
-    IntegerObject() {
+    public IntegerObject() {
     }
 
     IntegerObject(Integer added) {
@@ -36,7 +36,7 @@ public class IntegerObject implements CollectionBigNumber<Integer> {
 
     @Override
     public Integer get(Integer index) {
-        if (index < 0 || index > 8 || index > this.size) {
+        if (index < 0 || index > this.size) {
             throw new IllegalArgumentException("Invalid index " + index + " real size " + this.size);
         }
         Integer storage = this.storage;

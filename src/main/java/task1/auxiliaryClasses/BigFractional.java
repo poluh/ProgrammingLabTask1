@@ -125,7 +125,6 @@ public class BigFractional {
         BigNumber imaginaryThis = new BigNumber(this.wholePart.toString() + this.fraction.toString());
         BigNumber imaginaryOther = new BigNumber(other.wholePart.toString() + other.fraction.toString());
         BigNumber times = imaginaryThis.times(imaginaryOther);
-        System.out.println(imaginaryThis);
         ArrayBigNumber timesArray = times.getArray();
         log.log(Level.FINE, "Number without dot={0}", times.toString());
         StringBuilder fraction = new StringBuilder();
