@@ -8,12 +8,16 @@ public class IntegerObject implements CollectionBigNumber<Integer> {
     public IntegerObject() {
     }
 
+    IntegerObject(Integer added) {
+        this.add(added);
+    }
+
     @Override
-    public void add(int added) {
-        if (added < 0) throw new NumberFormatException("Only positive numbers are allowed");
+    public void add(Integer added) {
+        if (added < 0 || added > 9) throw new NumberFormatException("Only positive/single-character numbers are allowed");
 
         if (storage == -2) {
-            this.storage = added == 0 ? -1 : added;
+            this.storage = (added == 0) ? -1 : added;
             this.size = 1;
         } else if (this.size < 10) {
             this.storage = this.storage * 10 + (this.storage > 0 ? added : -added);
@@ -22,14 +26,20 @@ public class IntegerObject implements CollectionBigNumber<Integer> {
     }
 
     @Override
-    public int get(Integer index) {
-        index++;
-        if (index < 0 || index > 10 || index > this.size - 1) {
-            throw new IllegalArgumentException("Invalid index");
+    public void asCollection(Integer... values) {
+        for (Integer integer : values) {
+            this.add(integer);
         }
-        int storage = this.storage;
-        int size = this.size;
-        while (size != index) {
+    }
+
+    @Override
+    public Integer get(Integer index) {
+        if (index < 0 || index > 10 || index > this.size - 1) {
+            throw new IllegalArgumentException("Invalid index " + index + " real size " + this.size);
+        }
+        Integer storage = this.storage;
+        Integer size = this.size;
+        while (!size.equals(index)) {
             storage /= 10;
             size--;
         }
@@ -39,27 +49,55 @@ public class IntegerObject implements CollectionBigNumber<Integer> {
     }
 
     @Override
+    public void set(Integer index, Integer object) {
+        if (index < 0 || index > 10 || index > this.size - 1) {
+            throw new IllegalArgumentException("Invalid index");
+        }
+        double bufStorage = this.storage;
+        this.storage = -2;
+        for (int i = 0; i < this.size; i++) {
+            if (i == index) {
+                this.add(object);
+                i++;
+            }
+            if (i < this.size) {
+                bufStorage %= Math.pow(10, Math.log10(bufStorage));
+                this.add((int) (bufStorage / Math.pow(10, Math.log10(bufStorage))));
+            }
+        }
+    }
+
+    @Override
     public void remove(Integer index) {
 
     }
 
     @Override
-    public int size() {
+    public Integer size() {
         return size;
     }
 
-    public int getStorage() {
+    public Integer getStorage() {
         return storage;
     }
 
     public boolean isCompleted() {
-        return this.size > 8;
+        return this.size > 9;
     }
 
     @Override
     public String toString() {
-        int thisStorage = this.getStorage();
-        return thisStorage > 0 ? String.valueOf(thisStorage) : ("0".concat(String.valueOf(thisStorage).substring(2)));
+        Integer thisStorage = this.getStorage();
+        String thisStorageStr = thisStorage.toString();
+        if (thisStorage < 0) {
+            return (thisStorageStr.length() == 2) ? "0" : thisStorageStr.substring(2, thisStorageStr.length());
+        }
+        return thisStorageStr;
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        IntegerObject object = (IntegerObject) obj;
+        return obj.getClass() == this.getClass() && object.storage == this.storage;
+    }
 }

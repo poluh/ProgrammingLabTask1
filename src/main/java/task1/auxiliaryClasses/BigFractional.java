@@ -1,5 +1,7 @@
 package task1.auxiliaryClasses;
 
+import task1.auxiliaryClasses.Collection.ArrayBigNumber;
+
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
@@ -121,15 +123,15 @@ public class BigFractional {
         BigNumber imaginaryThis = new BigNumber(this.wholePart.toString() + this.fraction.toString());
         BigNumber imaginaryOther = new BigNumber(other.wholePart.toString() + other.fraction.toString());
         BigNumber times = imaginaryThis.times(imaginaryOther);
-        byte[] timesBytes = times.getBytes();
+        ArrayBigNumber timesBytes = times.getArray();
         log.log(Level.FINE, "Number without dot={0}", times.toString());
         StringBuilder fraction = new StringBuilder();
         StringBuilder wholePart = new StringBuilder();
         for (int i = times.length() - 1; i >= 0; i--) {
             if (i > tailLength || (times.isNegative() && i >= tailLength)) {
-                fraction.append(timesBytes[i]);
+                fraction.append(timesBytes.get(i));
             } else {
-                wholePart.append(timesBytes[i]);
+                wholePart.append(timesBytes.get(i));
             }
         }
         BigFractional answer =
