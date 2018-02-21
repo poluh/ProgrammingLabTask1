@@ -89,17 +89,11 @@ public class BigNumber implements Comparable<BigNumber> {
     }
 
     public void round(int border) {
-        if (border > this.length() - 1) this.setNumber(this.appendZeros(border - this.length() + 1, false));
-        ArrayBigNumber numberArr = this.number;
-
-        this.setNumber(this.getNumber().substring(0, border + 1));
-        if (numberArr.get(border) >= 5) {
-            this.setNumber(this.plus(10 - numberArr.get(border)).getNumber());
-        } else {
-            numberArr.set(border, 0);
-            this.setNumber(numberArr);
-        }
-        this.setNumber(this.getNumber().substring(0, border - 1));
+         int roundNumber = this.get(border);
+         BigNumber difference = new BigNumber(String.valueOf((int) Math.pow(10 - roundNumber, this.length() - border - 1)));
+         if (roundNumber >= 5) {
+             this.plus(difference);
+         } else this.minus(difference);
     }
 
     public boolean isEmpty() {
@@ -252,6 +246,7 @@ public class BigNumber implements Comparable<BigNumber> {
     }
 
     public BigNumber times(BigNumber other) {
+/*
         if (this.number.equals(new ArrayBigNumber(0)) ||
                 other.number.equals(new ArrayBigNumber(0))) return new BigNumber("0");
         if (this.number.equals(new ArrayBigNumber(0)) ||
@@ -260,6 +255,7 @@ public class BigNumber implements Comparable<BigNumber> {
         }
         if (this.number.equals(new ArrayBigNumber(2))) return other.plus(other);
         if (other.number.equals(new ArrayBigNumber(2))) return this.plus(this);
+*/
 
         BigNumber bufAnswer = new BigNumber("0");
         boolean negative = this.isNegative() ^ other.isNegative();

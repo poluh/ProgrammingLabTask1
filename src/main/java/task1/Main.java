@@ -14,7 +14,7 @@ public class Main {
 
     public static void main(String[] args) {
 
-        char[] problem = "112312321322".toCharArray();
+        char[] problem = "1".toCharArray();
         ArrayBigNumber arrayBigNumber = new ArrayBigNumber();
         for (char ch : problem) arrayBigNumber.add(ch);
         System.out.println(arrayBigNumber);

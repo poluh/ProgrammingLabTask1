@@ -43,7 +43,7 @@ class BigFractionalTest {
     @Test
     void times() {
         assertEquals(new BigFractional("15156.4413"),
-                new BigFractional("123.123").times(new BigFractional("123.1")));
+                new BigFractional("123.9").times(new BigFractional("123.10")));
         assertEquals(new BigFractional("-321.230"),
                 new BigFractional("321.23").times(new BigFractional("-1.0")));
         assertEquals(new BigFractional("8647.66051"),

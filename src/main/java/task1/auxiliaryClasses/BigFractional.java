@@ -58,7 +58,7 @@ public class BigFractional {
     }
 
     public BigFractional round(int border) {
-        if (border == 0) {
+        if (border == 0 || border >= this.fraction.length()) {
             return this;
         } else {
             this.fraction.round(border);
@@ -125,10 +125,12 @@ public class BigFractional {
         BigNumber imaginaryThis = new BigNumber(this.wholePart.toString() + this.fraction.toString());
         BigNumber imaginaryOther = new BigNumber(other.wholePart.toString() + other.fraction.toString());
         BigNumber times = imaginaryThis.times(imaginaryOther);
+        System.out.println(imaginaryThis);
         ArrayBigNumber timesArray = times.getArray();
         log.log(Level.FINE, "Number without dot={0}", times.toString());
         StringBuilder fraction = new StringBuilder();
         StringBuilder wholePart = new StringBuilder();
+
         for (int i = times.length() - 1; i >= 0; i--) {
             if (i > tailLength || (times.isNegative() && i >= tailLength)) {
                 fraction.append(timesArray.get(i));
@@ -136,7 +138,6 @@ public class BigFractional {
                 wholePart.append(timesArray.get(i));
             }
         }
-        System.out.println(wholePart.toString() + fraction.toString());
         BigFractional answer =
                 new BigFractional(wholePart.reverse().toString(), fraction.reverse().toString()).round(border);
         answer.setNegative(times.isNegative());

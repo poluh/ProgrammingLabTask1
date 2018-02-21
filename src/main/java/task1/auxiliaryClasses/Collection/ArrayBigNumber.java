@@ -97,7 +97,7 @@ public class ArrayBigNumber implements CollectionBigNumber<Integer> {
     public boolean equals(Object obj) {
         if (obj.getClass() != this.getClass()) return false;
         for (int i = 0; i < this.columnObjects(); i++) {
-            if (!Objects.equals(this.storage.get(i), this.storage.get(i))) return false;
+            if (this.storage.get(i) != this.storage.get(i)) return false;
         }
         return true;
     }
