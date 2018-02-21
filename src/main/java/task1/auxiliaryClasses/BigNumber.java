@@ -139,7 +139,7 @@ public class BigNumber implements Comparable<BigNumber> {
         if (oneNegative) {
             firstBuf = delNegative(this);
             secondBuf = delNegative(other);
-            return maxOf(firstBuf, secondBuf).minus(minOf(CfirstBuf, secondBuf));
+            return maxOf(firstBuf, secondBuf).minus(minOf(firstBuf, secondBuf));
         } else {
             int length = Math.max(this.length(), other.length());
             firstBuf = new BigNumber(this.appendZeros(Math.abs(this.length() - length), true),
