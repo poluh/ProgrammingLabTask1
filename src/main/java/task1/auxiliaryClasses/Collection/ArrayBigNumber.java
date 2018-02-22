@@ -1,13 +1,18 @@
 package task1.auxiliaryClasses.Collection;
 
+import task1.auxiliaryClasses.BigFractional;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 public class ArrayBigNumber implements CollectionBigNumber<Integer> {
 
     private List<IntegerObject> storage = new ArrayList<>();
+    private static Logger log = Logger.getLogger(BigFractional.class.getName());
 
     private void create(String addedStr) {
         char[] charArray = addedStr.toCharArray();
@@ -50,6 +55,7 @@ public class ArrayBigNumber implements CollectionBigNumber<Integer> {
         return answer;
     }
 
+
     @Override
     public void set(Integer index, Integer object) {
         Integer addressObject = index / 9;
@@ -61,7 +67,12 @@ public class ArrayBigNumber implements CollectionBigNumber<Integer> {
     }
 
     public void add(char symbol) {
-        this.add(Integer.valueOf(String.valueOf(symbol)));
+        try {
+            this.add(Integer.valueOf(String.valueOf(symbol)));
+        } catch (NumberFormatException ex) {
+            log.log(Level.FINE, "An error occurred due to the addition of a symbol = {0}", symbol);
+            this.add('0');
+        }
     }
 
     @Override

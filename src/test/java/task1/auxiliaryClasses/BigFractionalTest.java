@@ -8,7 +8,7 @@ class BigFractionalTest {
 
     @org.junit.jupiter.api.Test
     void plus() {
-        /*assertEquals(new BigFractional("246.246"),
+        assertEquals(new BigFractional("246.246"),
                 new BigFractional("123.123").plus(new BigFractional("123.123")));
 
         assertEquals(new BigFractional("14884.55301"),
@@ -22,7 +22,6 @@ class BigFractionalTest {
 
         assertEquals(new BigFractional("72.000000922"),
                 new BigFractional("0.000000001").plus(new BigFractional("72.000000921")));
-*/
         assertEquals(new BigFractional("8800559014.328771"),
                 new BigFractional("8800559014.188301").plus(new BigFractional("0.14047")));
 

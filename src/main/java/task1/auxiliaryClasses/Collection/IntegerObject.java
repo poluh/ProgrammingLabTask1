@@ -37,6 +37,7 @@ public class IntegerObject implements CollectionBigNumber<Integer> {
 
     @Override
     public Integer get(Integer index) {
+        index = index == 0 ? 1 : index;
         if (index < 1 || index > this.size) {
             throw new IllegalArgumentException("Invalid index " + index + " real size " + this.size);
         }

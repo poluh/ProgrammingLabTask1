@@ -18,6 +18,6 @@ public class Main {
         IntegerObject integerObject = new IntegerObject();
         integerObject.add(1);
 
-        System.out.println(new BigNumber("9").plus(new BigNumber("9")));
+        System.out.println(new BigNumber("999").timesOneNum(9));
     }
 }

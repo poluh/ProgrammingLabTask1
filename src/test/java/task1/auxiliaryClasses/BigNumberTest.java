@@ -7,7 +7,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class BigNumberTest {
 
     @Test
-    void isGreater() {
+    void compareTo() {
         assertEquals(1, new BigNumber("3225454354353").compareTo(new BigNumber("3225454354352")));
         assertEquals(1, new BigNumber("13213123123123").compareTo(new BigNumber("-13243243242343243423434")));
         assertEquals(-1, new BigNumber("-54545624532").compareTo(new BigNumber("3234872847438")));
