@@ -8,16 +8,5 @@ public class Main {
 
     public static void main(String[] args) {
 
-
-        ArrayBigNumber arrayBigNumber = new ArrayBigNumber();
-        arrayBigNumber.add(0);
-        arrayBigNumber.add(0);
-        arrayBigNumber.add(1);
-
-        int bufStorage = 123;
-        IntegerObject integerObject = new IntegerObject();
-        integerObject.add(1);
-
-        System.out.println(new BigNumber("999").timesOneNum(9));
     }
 }

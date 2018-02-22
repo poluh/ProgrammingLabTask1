@@ -4,7 +4,6 @@ import task1.auxiliaryClasses.Collection.ArrayBigNumber;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -220,7 +219,8 @@ public class BigNumber implements Comparable<BigNumber> {
         }
     }
 
-    public BigNumber timesOneNum(int num) {
+    private BigNumber timesOneDigit(int num) {
+        if (num < 0 || num > 9) throw new IllegalArgumentException("The number must be one-digit");
         if (num == 1) return this;
         if (num == 0) {
             return new BigNumber(appendZeros(1, false), false);
@@ -235,8 +235,21 @@ public class BigNumber implements Comparable<BigNumber> {
     }
 
     public BigNumber times(BigNumber other) {
+        boolean negative = this.isNegative() ^ other.isNegative();
+        BigNumber firstBuf = delNegative(this);
+        BigNumber secondBuf = delNegative(other);
+        BigNumber buf = maxOf(firstBuf, secondBuf);
+        secondBuf = minOf(firstBuf, secondBuf);
+        firstBuf = buf;
 
-        return other;
+        BigNumber answer = new BigNumber("0");
+        int length = secondBuf.length();
+        for (int i = length; i > 0; i--) {
+            answer = answer.plus(new BigNumber(firstBuf.timesOneDigit(secondBuf.get(i))
+                    .appendZeros(length - i, false), false));
+        }
+        answer.setNegative(negative);
+        return answer;
     }
 
     @Override

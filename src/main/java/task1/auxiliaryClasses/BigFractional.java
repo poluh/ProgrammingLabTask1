@@ -83,7 +83,7 @@ public class BigFractional {
             }
         }
 
-        BigNumber fraction = this.fraction.plus(other.fraction, true);
+        BigNumber fraction = this.fraction.plus(other.fraction);
         BigNumber wholePart;
         if (fraction.length() > maxOf(this.fraction, other.fraction).length()) {
             wholePart = this.wholePart.plus(other.wholePart).plus(1);
@@ -104,7 +104,7 @@ public class BigFractional {
         if (this.isNegative() && other.isNegative()) {
             fraction = this.fraction.minus(other.fraction, true);
         } else if (this.isNegative() || other.isNegative()) {
-            fraction = this.fraction.plus(other.fraction, true);
+            fraction = this.fraction.plus(other.fraction);
         } else {
             fraction = this.fraction.minus(other.fraction, true);
         }
