@@ -146,10 +146,12 @@ public class BigNumber implements Comparable<BigNumber> {
                     false);
             secondBuf = new BigNumber(other.appendZeros(Math.abs(other.length() - length), true),
                     false);
+            log.log(Level.INFO, "First number for sum = {0}", firstBuf);
+            log.log(Level.INFO, "Second number for sum = {0}", secondBuf);
 
             StringBuilder numberBuf = new StringBuilder();
             int remember = 0;
-            for (int i = length; i >= 1; i--) {
+            for (int i = length; i > 0; i--) {
                 int addedNum = firstBuf.get(i) + secondBuf.get(i) + remember;
 
                 if (addedNum > 9) {
@@ -160,6 +162,7 @@ public class BigNumber implements Comparable<BigNumber> {
                 }
                 numberBuf.append(addedNum);
             }
+            numberBuf.append(remember == 1 ? "1" : "");
             ArrayBigNumber number = new ArrayBigNumber(numberBuf.reverse().toString());
             return bothNegative ? new BigNumber(number, true) : new BigNumber(number, false);
         }

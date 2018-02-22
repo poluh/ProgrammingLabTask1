@@ -15,7 +15,8 @@ public class IntegerObject implements CollectionBigNumber<Integer> {
 
     @Override
     public void add(Integer added) {
-        if (added < 0 || added > 9) throw new NumberFormatException("Only positive/single-character numbers are allowed");
+        if (added < 0 || added > 9)
+            throw new NumberFormatException("Only positive/single-character numbers are allowed");
         if (this.size > 8) throw new IllegalArgumentException("Container overflow");
 
         if (storage == -2) {
@@ -36,18 +37,12 @@ public class IntegerObject implements CollectionBigNumber<Integer> {
 
     @Override
     public Integer get(Integer index) {
-        if (index < 0 || index > this.size) {
+        if (index < 1 || index > this.size) {
             throw new IllegalArgumentException("Invalid index " + index + " real size " + this.size);
         }
-        Integer storage = this.storage;
-        Integer size = this.size;
-        while (!size.equals(index)) {
-            storage /= 10;
-            size--;
-        }
-        int answer = storage % 10;
-        answer = answer == -1 ? 0 : answer;
-        return storage < 0 ? answer * -1 : answer;
+        if (index == 1 && this.storage < 0) return 0;
+        int answer = this.size != 1 ? ((this.storage / (int) Math.pow(10, this.size - index)) % 10) : this.storage;
+        return answer < 0 ? answer * -1 : answer;
     }
 
     @Override

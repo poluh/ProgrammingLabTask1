@@ -46,11 +46,6 @@ public class ArrayBigNumber implements CollectionBigNumber<Integer> {
         if (!this.storage.isEmpty() && addressObject < this.storage.size()) {
             IntegerObject object = this.storage.get(addressObject);
             answer = object.get(index - 9 * addressObject);
-            System.out.println(object);
-            System.out.println(index);
-            System.out.println(addressObject);
-            System.out.println(index - 9 * addressObject);
-            System.out.println(answer);
         }
         return answer;
     }

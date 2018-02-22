@@ -1,14 +1,8 @@
 package task1;
 
-import task1.auxiliaryClasses.BigFractional;
 import task1.auxiliaryClasses.BigNumber;
 import task1.auxiliaryClasses.Collection.ArrayBigNumber;
-import task1.auxiliaryClasses.Collection.CollectionBigNumber;
 import task1.auxiliaryClasses.Collection.IntegerObject;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.logging.Logger;
 
 public class Main {
 
@@ -16,9 +10,14 @@ public class Main {
 
 
         ArrayBigNumber arrayBigNumber = new ArrayBigNumber();
-        for (int i = 0; i < 3; ++i) {
-            arrayBigNumber.add(i);
-        }
-        arrayBigNumber.add(arrayBigNumber.get(2));
+        arrayBigNumber.add(0);
+        arrayBigNumber.add(0);
+        arrayBigNumber.add(1);
+
+        int bufStorage = 123;
+        IntegerObject integerObject = new IntegerObject();
+        integerObject.add(1);
+
+        System.out.println(new BigNumber("9").plus(new BigNumber("9")));
     }
 }
