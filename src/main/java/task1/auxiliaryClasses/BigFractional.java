@@ -8,8 +8,21 @@ import java.util.regex.Pattern;
 
 import static task1.auxiliaryClasses.BigNumber.maxOf;
 
+/**
+ * This class is based on the magnificent BigNumber.
+ * The plus and minus methods (and to some extent also the times)
+ * use the existing methods in BigNumber. For details go there.
+ * This method stores by BigNumber on each side of the point,
+ * can correspondingly store 2,147,483,647 characters on each side,
+ * ensuring accuracy of calculations just up to 2,147,483,647 decimal places.
+ */
+
 public class BigFractional {
     private static Logger log = Logger.getLogger(BigFractional.class.getName());
+
+    /**
+     * My code is self-documenting.
+     */
 
     private BigNumber wholePart;
     private BigNumber fraction;
@@ -44,6 +57,7 @@ public class BigFractional {
             create(new BigNumber(parts[0]), new BigNumber(parts[1]));
         } else if (number.matches("\\d+")) {
             create(new BigNumber(number), new BigNumber("0"));
+        } else {
             throw new NumberFormatException("Invalid format.");
         }
     }
@@ -100,14 +114,9 @@ public class BigFractional {
     }
 
     public BigFractional minus(BigFractional other, int border) {
-        BigNumber fraction;
-        if (this.isNegative() && other.isNegative()) {
-            fraction = this.fraction.minus(other.fraction, true);
-        } else if (this.isNegative() || other.isNegative()) {
-            fraction = this.fraction.plus(other.fraction);
-        } else {
-            fraction = this.fraction.minus(other.fraction, true);
-        }
+        BigNumber fraction = (this.isNegative() ^ other.isNegative()) ?
+                this.fraction.plus(other.fraction) : this.fraction.minus(other.fraction, true);
+
         BigNumber wholePart = this.wholePart.minus(other.wholePart);
         fraction.delNegative();
 
@@ -140,7 +149,7 @@ public class BigFractional {
         BigFractional answer =
                 new BigFractional(wholePart.reverse().toString(), fraction.reverse().toString()).round(border);
         answer.setNegative(times.isNegative());
-        log.log(Level.INFO,"Result={0}", answer.toString());
+        log.log(Level.INFO, "Result={0}", answer.toString());
         return answer;
     }
 
