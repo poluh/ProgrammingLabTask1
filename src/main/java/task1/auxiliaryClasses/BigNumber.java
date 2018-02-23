@@ -80,6 +80,10 @@ public class BigNumber implements Comparable<BigNumber> {
         }
     }
 
+    public BigNumber(BigNumber bigNumber, boolean negative) {
+        create(bigNumber.number, negative);
+    }
+
     /**
      * A classical constructor that receives an ArrayBigNumber and
      * a number sign that immediately passes to the private create() method.
@@ -220,13 +224,15 @@ public class BigNumber implements Comparable<BigNumber> {
 
         boolean bothNegative = this.isNegative() && other.isNegative();
         boolean oneNegative = this.isNegative() ^ other.isNegative();
-        BigNumber firstBuf;
-        BigNumber secondBuf;
+        BigNumber firstBuf = delNegative(this);
+        BigNumber secondBuf = delNegative(other);
         if (oneNegative) {
-            firstBuf = delNegative(this);
-            secondBuf = delNegative(other);
             if (firstBuf.equals(secondBuf)) return new BigNumber("0");
-            return maxOf(firstBuf, secondBuf).minus(minOf(firstBuf, secondBuf));
+            if (firstBuf.compareTo(secondBuf) > 0) {
+                return new BigNumber(firstBuf.minus(secondBuf), this.negative);
+            } else {
+                return new BigNumber(secondBuf.minus(firstBuf), other.negative);
+            }
         } else {
             int length = Math.max(this.length(), other.length());
             firstBuf = new BigNumber(this.appendZeros(Math.abs(this.length() - length), true),
@@ -240,7 +246,7 @@ public class BigNumber implements Comparable<BigNumber> {
             int remember = 0;
             for (int i = length; i > 0; i--) {
                 int addedNum = firstBuf.get(i) + secondBuf.get(i) + remember;
-
+                System.out.println(firstBuf.get(i));
                 if (addedNum > 9) {
                     addedNum -= 10;
                     remember = 1;

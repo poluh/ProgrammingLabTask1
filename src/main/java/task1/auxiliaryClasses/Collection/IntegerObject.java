@@ -38,10 +38,12 @@ public class IntegerObject implements CollectionBigNumber<Integer> {
     @Override
     public Integer get(Integer index) {
         index = index == 0 ? 1 : index;
+        if (index == 1 && this.storage < 0) return 0;
         if (index < 1 || index > this.size) {
             throw new IllegalArgumentException("Invalid index " + index + " real size " + this.size);
         }
-        if (index == 1 && this.storage < 0) return 0;
+        int endStorage = this.storage % 10;
+        if (index == this.size) return  endStorage < 0 ? endStorage * -1 : endStorage;
         int answer = this.size != 1 ? ((this.storage / (int) Math.pow(10, this.size - index)) % 10) : this.storage;
         return answer < 0 ? answer * -1 : answer;
     }

@@ -46,9 +46,10 @@ public class ArrayBigNumber implements CollectionBigNumber<Integer> {
 
     @Override
     public Integer get(Integer index) {
-        int answer = -1;
-        int addressObject = index / 9;
-        if (!this.storage.isEmpty() && addressObject < this.storage.size()) {
+        int answer = 1;
+        int realIndex = index - 1;
+        int addressObject = realIndex / 9;
+        if (!this.storage.isEmpty() && addressObject <= this.storage.size()) {
             IntegerObject object = this.storage.get(addressObject);
             answer = object.get(index - 9 * addressObject);
         }

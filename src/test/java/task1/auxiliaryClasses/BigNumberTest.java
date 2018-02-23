@@ -2,9 +2,17 @@ package task1.auxiliaryClasses;
 
 import org.junit.jupiter.api.Test;
 
+import java.math.BigInteger;
+import java.util.Random;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class BigNumberTest {
+
+    private BigInteger generate(int seed) {
+        return new BigInteger(50, 15, new Random(seed));
+    }
+
 
     @Test
     void compareTo() {
@@ -47,6 +55,13 @@ class BigNumberTest {
 
     @Test
     void plus() {
+
+        assertEquals(new BigNumber(generate(10).toString())
+                .plus(new BigNumber(generate(14).toString())).toString(),
+                generate(10).add(generate(14)).toString());
+        assertEquals(new BigNumber(generate(30).toString())
+                        .plus(new BigNumber(generate(14).toString())).toString(),
+                generate(30).add(generate(14)).toString());
         assertEquals(new BigNumber("1876748"), new BigNumber("938374").plus(new BigNumber("938374")));
         assertEquals(new BigNumber("93682766"), new BigNumber("93248423").plus(new BigNumber("434343")));
         assertEquals(new BigNumber("88854654"), new BigNumber("-34234").plus(new BigNumber("88888888")));
