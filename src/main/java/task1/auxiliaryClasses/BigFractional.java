@@ -97,7 +97,7 @@ public class BigFractional {
             }
         }
 
-        BigNumber fraction = this.fraction.plus(other.fraction);
+        BigNumber fraction = this.fraction.plus(other.fraction, true);
         BigNumber wholePart;
         if (fraction.length() > maxOf(this.fraction, other.fraction).length()) {
             wholePart = this.wholePart.plus(other.wholePart).plus(1);

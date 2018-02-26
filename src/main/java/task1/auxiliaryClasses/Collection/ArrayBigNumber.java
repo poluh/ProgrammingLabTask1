@@ -11,92 +11,48 @@ import java.util.stream.Collectors;
 
 public class ArrayBigNumber implements CollectionBigNumber<Integer> {
 
-    private List<IntegerObject> storage = new ArrayList<>();
-    private static Logger log = Logger.getLogger(BigFractional.class.getName());
-
-    private void create(String addedStr) {
-        char[] charArray = addedStr.toCharArray();
-        for (char symbol : charArray) {
-            this.add(symbol);
-        }
-    }
-
-    public ArrayBigNumber() {
-    }
-
-    public ArrayBigNumber(String addedStr) {
-        create(addedStr);
-    }
-
-    public ArrayBigNumber(int addedInt) {
-        create(String.valueOf(addedInt));
-    }
-
-    ArrayBigNumber(List<IntegerObject> objectList) {
-    }
-
-    @Override
-    public Integer size() {
-        return this.storage.stream().mapToInt(IntegerObject::size).sum();
-    }
-
-    private Integer columnObjects() {
-        return this.storage.size();
-    }
-
-    @Override
-    public Integer get(Integer index) {
-        int answer = 1;
-        int realIndex = index - 1;
-        int addressObject = realIndex / 9;
-        if (!this.storage.isEmpty() && addressObject <= this.storage.size()) {
-            IntegerObject object = this.storage.get(addressObject);
-            answer = object.get(index - 9 * addressObject);
-        }
-        return answer;
-    }
-
-
-    @Override
-    public void set(Integer index, Integer object) {
-        Integer addressObject = index / 9;
-        this.storage.get(addressObject).set(index - addressObject * 9, object);
-    }
-
-    @Override
-    public void remove(Integer index) {
-    }
-
-    public void add(char symbol) {
-        try {
-            this.add(Integer.valueOf(String.valueOf(symbol)));
-        } catch (NumberFormatException ex) {
-            log.log(Level.FINE, "An error occurred due to the addition of a symbol = {0}", symbol);
-            this.add('0');
-        }
-    }
+    int size = 0;
+    int notation;
+    byte[] storage;
 
     @Override
     public void add(Integer added) {
 
-        if (!this.storage.isEmpty()) {
-            IntegerObject object = this.storage.get(this.storage.size() - 1);
-            if (!object.isCompleted()) {
-                object.add(added);
-            } else {
-                IntegerObject newObject = new IntegerObject();
-                newObject.add(added);
-                this.storage.add(newObject);
-            }
-        } else {
-            this.storage.add(new IntegerObject(added));
-        }
+    }
+
+    @Override
+    public Integer get(Integer index) {
+        return null;
+    }
+
+    @Override
+    public void set(Integer index, Integer object) {
+
+    }
+
+    @Override
+    public void remove(Integer index) {
+
+    }
+
+    @Override
+    public Integer size() {
+        return size;
+    }
+
+    public int notation() {
+        return notation;
+    }
+
+    @Override
+    public boolean isEmpty() {
+        return size == 0;
     }
 
     @Override
     public void asCollection(Integer... values) {
-        for (Integer integer : values) {
-            this.add(integer);
+        for (Integer value : values) {
+            this.add(value);
         }
     }
 
@@ -107,10 +63,6 @@ public class ArrayBigNumber implements CollectionBigNumber<Integer> {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj.getClass() != this.getClass()) return false;
-        for (int i = 0; i < this.columnObjects(); i++) {
-            if (this.storage.get(i) != this.storage.get(i)) return false;
-        }
-        return true;
+        return (obj.getClass() == this.getClass() && this.storage.equals(((ArrayBigNumber) obj).storage));
     }
 }

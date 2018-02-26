@@ -10,19 +10,18 @@ import java.util.stream.IntStream;
 
 
 /**
- *
  * This class is designed to store REALLY LARGE NUMBERS,
  * as well as an auxiliary class for BigNumberFraction.
  * Can add, subtract and multiply numbers without loss in accuracy,
  * as well as fast enough in time.
  * (Multiplying two numbers in 100k characters takes
  * no more than two or three seconds on the MacBook Air 2017)
- *
+ * <p>
  * It can contain int-characters (2,147,483,647),
  * while the number storage design does not overdo
  * more than four bytes for every nine digits
  * (for details, in the ArrayBigNumber and IntegerObject classes).
- *
+ * <p>
  * PLEASE DO NOT KEEP THE NUMBER OF NUMBER, THE RESULT OF OPERATIONS ON WHICH CAN BE PLACED IN LONG OR INT
  */
 
@@ -211,6 +210,10 @@ public class BigNumber implements Comparable<BigNumber> {
         return this.plus(new BigNumber(String.valueOf(other)));
     }
 
+    public BigNumber plus(BigNumber other) {
+        return this.plus(other, false);
+    }
+
     /**
      * The method of adding two numbers, can take both both negative numbers,
      * and one negative with a positive ordinary.
@@ -220,7 +223,7 @@ public class BigNumber implements Comparable<BigNumber> {
      * @return result sum
      */
 
-    public BigNumber plus(BigNumber other) {
+    public BigNumber plus(BigNumber other, boolean fraction) {
 
         boolean bothNegative = this.isNegative() && other.isNegative();
         boolean oneNegative = this.isNegative() ^ other.isNegative();
@@ -235,9 +238,9 @@ public class BigNumber implements Comparable<BigNumber> {
             }
         } else {
             int length = Math.max(this.length(), other.length());
-            firstBuf = new BigNumber(this.appendZeros(Math.abs(this.length() - length), true),
+            firstBuf = new BigNumber(this.appendZeros(Math.abs(this.length() - length), !fraction),
                     false);
-            secondBuf = new BigNumber(other.appendZeros(Math.abs(other.length() - length), true),
+            secondBuf = new BigNumber(other.appendZeros(Math.abs(other.length() - length), !fraction),
                     false);
             log.log(Level.INFO, "First number for sum = {0}", firstBuf);
             log.log(Level.INFO, "Second number for sum = {0}", secondBuf);
@@ -286,47 +289,46 @@ public class BigNumber implements Comparable<BigNumber> {
      */
 
     public BigNumber minus(BigNumber other, boolean factional) {
+        if (this.equals(other)) return new BigNumber("0");
+
         boolean bothNegative = this.isNegative() && other.isNegative();
-        boolean oneNegative = this.isNegative() ^ other.isNegative();
-        BigNumber firstBuf = this.copy();
-        BigNumber secondBuf = other.copy();
+        boolean negative = this.compareTo(other) < 0;
 
-        if (oneNegative) {
-            firstBuf.setNegative(true);
-            secondBuf.setNegative(true);
-            return firstBuf.plus(secondBuf);
-        } else if (!bothNegative) {
-
-            if (this.equals(other)) return new BigNumber("0");
-
-            int length = Math.max(this.length(), other.length());
-            firstBuf = new BigNumber(this.appendZeros(Math.abs(this.length() - length), true),
-                    false);
-            secondBuf = new BigNumber(other.appendZeros(Math.abs(other.length() - length), true),
-                    false);
-            StringBuilder bufNumber = new StringBuilder();
-            int remember = 0;
-            for (int i = length; i > 0; i--) {
-                int addedNum = firstBuf.get(i) - secondBuf.get(i) - remember;
-                if (addedNum < 0) {
-                    addedNum += 10;
-                    remember = 1;
-                } else {
-                    remember = 0;
-                }
-                bufNumber.append(addedNum);
-            }
-
-            if (!factional) {
-                return new BigNumber((this.compareTo(other) > 0 ? "" : "-") + removeZeros(bufNumber.reverse().toString()));
+        BigNumber firstBuf = delNegative(this);
+        BigNumber secondBuf = delNegative(other);
+        StringBuilder bufNumber = new StringBuilder();
+        if (!bothNegative) {
+            if (this.isNegative() ^ other.isNegative()) {
+                return new BigNumber(firstBuf.plus(secondBuf), this.isNegative());
             } else {
-                return new BigNumber((this.compareTo(other) > 0 ? "" : "-") + bufNumber.reverse().toString());
+                int length = Math.max(this.length(), other.length());
+                BigNumber buf = firstBuf.copy();
+                firstBuf = new BigNumber(maxOf(firstBuf, secondBuf)
+                        .appendZeros(length - firstBuf.length(), true), false);
+                secondBuf = new BigNumber(minOf(secondBuf, buf).
+                        appendZeros(length - secondBuf.length(), true), false);
+                int remember = 0;
+                for (int i = length; i > 0; i--) {
+                    int addedNum = firstBuf.get(i) - secondBuf.get(i) - remember;
+                    if (addedNum < 0) {
+                        addedNum += 10;
+                        remember = 1;
+                    } else {
+                        remember = 0;
+                    }
+                    bufNumber.append(addedNum);
+                }
             }
         } else {
-            firstBuf = delNegative(this);
-            secondBuf = delNegative(other);
-            return secondBuf.minus(firstBuf);
+            secondBuf.minus(firstBuf);
         }
+
+        if (!factional) {
+            return new BigNumber((this.compareTo(other) > 0 ? "" : "-") + removeZeros(bufNumber.reverse().toString()));
+        } else {
+            return new BigNumber((this.compareTo(other) > 0 ? "" : "-") + bufNumber.reverse().toString());
+        }
+
     }
 
     private BigNumber timesOneDigit(int num) {
