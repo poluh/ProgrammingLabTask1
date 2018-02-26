@@ -2,12 +2,12 @@ package task1.auxiliaryClasses.Collection;
 
 public interface CollectionBigNumber<E> {
 
-    E size();
-    E get(E index);
+    E get(int index);
+    int size();
     boolean isEmpty();
-    void set(E index, E object);
-    void remove(E index);
-    void add(E added);
+    void set(int index, int object);
+    void remove(int index);
+    void add(String added);
     void asCollection(E... values);
 
 }

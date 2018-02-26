@@ -71,7 +71,7 @@ public class BigNumber implements Comparable<BigNumber> {
             ArrayBigNumber numbers = new ArrayBigNumber();
             int offset = negative ? 1 : 0;
             for (int i = offset; i < number.length(); i++) {
-                numbers.add(number.charAt(i));
+                numbers.add((int) number.charAt(i));
             }
             create(numbers, negative);
         } else {
