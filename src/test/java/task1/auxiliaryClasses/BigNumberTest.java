@@ -57,7 +57,7 @@ class BigNumberTest {
     void plus() {
 
         assertEquals(new BigNumber(generate(10).toString())
-                .plus(new BigNumber(generate(14).toString())).toString(),
+                        .plus(new BigNumber(generate(14).toString())).toString(),
                 generate(10).add(generate(14)).toString());
         assertEquals(new BigNumber(generate(30).toString())
                         .plus(new BigNumber(generate(14).toString())).toString(),

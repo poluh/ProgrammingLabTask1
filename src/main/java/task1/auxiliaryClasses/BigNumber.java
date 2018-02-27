@@ -33,6 +33,7 @@ public class BigNumber implements Comparable<BigNumber> {
     // Main storage for number
     private boolean negative;
     // Negative or positive number
+    private int notation;
 
 
     /**
@@ -50,6 +51,7 @@ public class BigNumber implements Comparable<BigNumber> {
         try {
             this.number = number;
             this.negative = negative;
+            this.notation = this.getArray().getNotation();
             log.log(Level.INFO, "Create new BigNumber={0}", this);
         } catch (NumberFormatException ex) {
             log.log(Level.SEVERE, "Exception: Invalid format number({0}).", number);
@@ -68,12 +70,7 @@ public class BigNumber implements Comparable<BigNumber> {
     public BigNumber(String number) {
         if (number.matches("-?\\d+")) {
             boolean negative = number.charAt(0) == '-';
-            ArrayBigNumber numbers = new ArrayBigNumber();
-            int offset = negative ? 1 : 0;
-            for (int i = offset; i < number.length(); i++) {
-                numbers.add((int) number.charAt(i));
-            }
-            create(numbers, negative);
+            create(new ArrayBigNumber(negative ? number.substring(1) : number), negative);
         } else {
             throw new NumberFormatException("NUMBER = " + number);
         }
@@ -128,9 +125,14 @@ public class BigNumber implements Comparable<BigNumber> {
         this.setNumber(new BigNumber(number).number);
     }
 
+    public int columnBlocks() {
+        return this.number.columnBlocks();
+    }
+
     public int length() {
         return this.number.size();
     }
+
 
     /**
      * The method of adding zeros before or after the number.
@@ -229,6 +231,7 @@ public class BigNumber implements Comparable<BigNumber> {
         boolean oneNegative = this.isNegative() ^ other.isNegative();
         BigNumber firstBuf = delNegative(this);
         BigNumber secondBuf = delNegative(other);
+        System.out.println(this.length());
         if (oneNegative) {
             if (firstBuf.equals(secondBuf)) return new BigNumber("0");
             if (firstBuf.compareTo(secondBuf) > 0) {
@@ -238,29 +241,29 @@ public class BigNumber implements Comparable<BigNumber> {
             }
         } else {
             int length = Math.max(this.length(), other.length());
+            int columnBlocks = Math.max(this.columnBlocks(), other.columnBlocks());
             firstBuf = new BigNumber(this.appendZeros(Math.abs(this.length() - length), !fraction),
                     false);
             secondBuf = new BigNumber(other.appendZeros(Math.abs(other.length() - length), !fraction),
                     false);
             log.log(Level.INFO, "First number for sum = {0}", firstBuf);
             log.log(Level.INFO, "Second number for sum = {0}", secondBuf);
-
-            StringBuilder numberBuf = new StringBuilder();
+            ArrayBigNumber numberBuf = new ArrayBigNumber();
             int remember = 0;
-            for (int i = length; i > 0; i--) {
+            for (int i = columnBlocks - 1; i >= 0; i--) {
                 int addedNum = firstBuf.get(i) + secondBuf.get(i) + remember;
-                System.out.println(firstBuf.get(i));
-                if (addedNum > 9) {
-                    addedNum -= 10;
+                if (addedNum > notation) {
+                    addedNum -= notation;
                     remember = 1;
                 } else {
                     remember = 0;
                 }
-                numberBuf.append(addedNum);
+                numberBuf.add(addedNum);
             }
-            numberBuf.append(remember == 1 ? "1" : "");
-            ArrayBigNumber number = new ArrayBigNumber(numberBuf.reverse().toString());
-            return bothNegative ? new BigNumber(number, true) : new BigNumber(number, false);
+            numberBuf.add(remember == 1 ? "1" : "");
+            numberBuf.setFlag(Math.min(this.getArray().getFlag(), other.getArray().getFlag()));
+            numberBuf.reverse();
+            return new BigNumber(numberBuf, bothNegative);
         }
     }
 
@@ -389,6 +392,11 @@ public class BigNumber implements Comparable<BigNumber> {
     }
 
     @Override
+    public int hashCode() {
+        return this.getNumber().hashCode() * this.getArray().getStorage().hashCode();
+    }
+
+    @Override
     public String toString() {
         return (this.isNegative() ? "-" : "") + this.getNumber();
     }
@@ -406,11 +414,13 @@ public class BigNumber implements Comparable<BigNumber> {
                 return other.isNegative() ? 1 : -1;
             }
         } else {
-            for (int i = 1; i <= this.length(); ++i) {
-                if (bothNegative) {
-                    return this.get(i) > other.get(i) ? 1 : -1;
-                } else {
-                    return this.get(i) > other.get(i) ? -1 : 1;
+            for (int i = 0; i < this.columnBlocks(); ++i) {
+                if (this.get(i) != other.get(i)) {
+                    if (bothNegative) {
+                        return this.get(i) > other.get(i) ? -1 : 1;
+                    } else {
+                        return this.get(i) > other.get(i) ? 1 : -1;
+                    }
                 }
             }
         }
