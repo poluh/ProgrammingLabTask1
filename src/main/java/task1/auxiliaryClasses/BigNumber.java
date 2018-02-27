@@ -324,9 +324,10 @@ public class BigNumber implements Comparable<BigNumber> {
                 }
             }
         } else {
-            secondBuf.minus(firstBuf);
+           return secondBuf.minus(firstBuf);
         }
         bufNumber.reverse();
+        log.log(Level.INFO, "Answer number = {0}", bufNumber.toString());
         if (!factional) {
             return new BigNumber((this.compareTo(other) > 0 ? "" : "-") + removeZeros(bufNumber.toString()));
         } else {
