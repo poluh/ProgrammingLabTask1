@@ -263,7 +263,7 @@ public class BigNumber implements Comparable<BigNumber> {
             numberBuf.add(remember == 1 ? "1" : "");
             numberBuf.setFlag(Math.min(this.getArray().getFlag(), other.getArray().getFlag()));
             numberBuf.reverse();
-            return new BigNumber(numberBuf, bothNegative);
+            return new BigNumber(fraction ? numberBuf : new ArrayBigNumber(removeZeros(numberBuf.toString())), bothNegative);
         }
     }
 
@@ -299,37 +299,38 @@ public class BigNumber implements Comparable<BigNumber> {
 
         BigNumber firstBuf = delNegative(this);
         BigNumber secondBuf = delNegative(other);
-        StringBuilder bufNumber = new StringBuilder();
+        ArrayBigNumber bufNumber = new ArrayBigNumber();
         if (!bothNegative) {
             if (this.isNegative() ^ other.isNegative()) {
                 return new BigNumber(firstBuf.plus(secondBuf), this.isNegative());
             } else {
                 int length = Math.max(this.length(), other.length());
+                int columnBlocks = Math.max(this.columnBlocks(), other.columnBlocks());
                 BigNumber buf = firstBuf.copy();
                 firstBuf = new BigNumber(maxOf(firstBuf, secondBuf)
                         .appendZeros(length - firstBuf.length(), true), false);
                 secondBuf = new BigNumber(minOf(secondBuf, buf).
                         appendZeros(length - secondBuf.length(), true), false);
                 int remember = 0;
-                for (int i = length; i > 0; i--) {
+                for (int i = columnBlocks - 1; i >= 0; i--) {
                     int addedNum = firstBuf.get(i) - secondBuf.get(i) - remember;
                     if (addedNum < 0) {
-                        addedNum += 10;
+                        addedNum += this.notation;
                         remember = 1;
                     } else {
                         remember = 0;
                     }
-                    bufNumber.append(addedNum);
+                    bufNumber.add(addedNum);
                 }
             }
         } else {
             secondBuf.minus(firstBuf);
         }
-
+        bufNumber.reverse();
         if (!factional) {
-            return new BigNumber((this.compareTo(other) > 0 ? "" : "-") + removeZeros(bufNumber.reverse().toString()));
+            return new BigNumber((this.compareTo(other) > 0 ? "" : "-") + removeZeros(bufNumber.toString()));
         } else {
-            return new BigNumber((this.compareTo(other) > 0 ? "" : "-") + bufNumber.reverse().toString());
+            return new BigNumber((this.compareTo(other) > 0 ? "" : "-") + bufNumber.toString());
         }
 
     }

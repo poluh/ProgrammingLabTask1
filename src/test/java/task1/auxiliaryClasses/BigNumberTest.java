@@ -56,12 +56,12 @@ class BigNumberTest {
     @Test
     void plus() {
 
-        assertEquals(new BigNumber(generate(10).toString())
+        assertEquals(new BigNumber(generate(8).toString())
                         .plus(new BigNumber(generate(14).toString())).toString(),
-                generate(10).add(generate(14)).toString());
-        assertEquals(new BigNumber(generate(30).toString())
-                        .plus(new BigNumber(generate(14).toString())).toString(),
-                generate(30).add(generate(14)).toString());
+                generate(8).add(generate(14)).toString());
+        assertEquals(new BigNumber(generate(8).toString())
+                        .plus(new BigNumber(generate(6).toString())).toString(),
+                generate(8).add(generate(6)).toString());
         assertEquals(new BigNumber("1876748"), new BigNumber("938374").plus(new BigNumber("938374")));
         assertEquals(new BigNumber("93682766"), new BigNumber("93248423").plus(new BigNumber("434343")));
         assertEquals(new BigNumber("88854654"), new BigNumber("-34234").plus(new BigNumber("88888888")));
