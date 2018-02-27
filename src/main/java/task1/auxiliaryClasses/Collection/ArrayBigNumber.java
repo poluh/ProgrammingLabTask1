@@ -1,13 +1,15 @@
 package task1.auxiliaryClasses.Collection;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.regex.Pattern;
 
 public class ArrayBigNumber implements CollectionBigNumber<Integer> {
 
     private int size = 0;
-    private final int notation = 100;
-    private List<Byte> storage;
+    private final int notation = 1000000000;
+    private final int lenOneNum =  (int) Math.ceil(Math.log10(notation + 0.5) - 1);
+    private final List<Integer> storage = new ArrayList<>();
 
     public ArrayBigNumber(String string) {
         this.add(string);
@@ -18,12 +20,10 @@ public class ArrayBigNumber implements CollectionBigNumber<Integer> {
 
     @Override
     public void add(String added) {
-        for (int i = 0; i < added.length() - 1; i += 2) {
-            try {
-                System.out.println((added.substring(i, i + 2)));
-                storage.add(Byte.valueOf(added.substring(i, i + 2)));
-            } catch (NullPointerException ignored) {
-            }
+        int addedLength = added.length();
+        for (int i = 0; i < addedLength; i += lenOneNum) {
+            Integer add = Integer.valueOf(added.substring(i, (addedLength > i + lenOneNum) ? i + lenOneNum : addedLength));
+            storage.add(add);
         }
     }
 
@@ -69,11 +69,24 @@ public class ArrayBigNumber implements CollectionBigNumber<Integer> {
 
     @Override
     public String toString() {
-        return this.storage.toString().replace(",", "");
+        StringBuilder answer = new StringBuilder();
+        for (Integer element : this.storage) {
+            int lenElement = (int) Math.ceil(Math.log10(element + 0.5) - 1);
+            if (lenElement < lenOneNum - 1) {
+                String pattern = "%0" + (lenOneNum - lenElement - 1) + "d";
+                answer.append(String.format(pattern, 0));
+            }
+            answer.append(element);
+        }
+        return answer.toString();
     }
 
     @Override
     public boolean equals(Object obj) {
         return (obj.getClass() == this.getClass() && this.storage.equals(((ArrayBigNumber) obj).storage));
+    }
+
+    public int getLenOneNum() {
+        return lenOneNum;
     }
 }
