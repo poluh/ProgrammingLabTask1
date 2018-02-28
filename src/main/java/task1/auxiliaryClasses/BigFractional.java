@@ -2,6 +2,7 @@ package task1.auxiliaryClasses;
 
 import task1.auxiliaryClasses.Collection.ArrayBigNumber;
 
+import javax.jws.soap.SOAPBinding;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
@@ -128,29 +129,37 @@ public class BigFractional {
     }
 
     public BigFractional times(BigFractional other, int border) {
+
         String[] strings = {this.toString(), other.toString()};
         log.log(Level.INFO, "{0} times {1}", strings);
-        int tailLength = this.fraction.length() + other.fraction.length();
-        BigNumber imaginaryThis = new BigNumber(this.wholePart.toString() + this.fraction.toString());
-        BigNumber imaginaryOther = new BigNumber(other.wholePart.toString() + other.fraction.toString());
+
+        BigNumber imaginaryThis = this.toBigNumber();
+        BigNumber imaginaryOther = other.toBigNumber();
         BigNumber times = imaginaryThis.times(imaginaryOther);
-        ArrayBigNumber timesArray = times.getArray();
-        log.log(Level.FINE, "Number without dot={0}", times.toString());
+
+        String timesStr = times.toString();
+        log.log(Level.INFO, "Number without dot={0}", timesStr);
+
+        int tailLength = times.length() - this.fraction.length() + other.fraction.length() - 3;
         StringBuilder fraction = new StringBuilder();
         StringBuilder wholePart = new StringBuilder();
 
-        for (int i = times.length() - 1; i >= 0; i--) {
+        for (int i = 0; i < timesStr.length(); i++) {
             if (i > tailLength || (times.isNegative() && i >= tailLength)) {
-                fraction.append(timesArray.get(i));
+                fraction.append(timesStr.charAt(i));
             } else {
-                wholePart.append(timesArray.get(i));
+                wholePart.append(timesStr.charAt(i));
             }
         }
         BigFractional answer =
-                new BigFractional(wholePart.reverse().toString(), fraction.reverse().toString()).round(border);
+                new BigFractional(wholePart.toString(), fraction.toString()).round(border);
         answer.setNegative(times.isNegative());
         log.log(Level.INFO, "Result={0}", answer.toString());
         return answer;
+    }
+
+    public BigNumber toBigNumber() {
+        return new BigNumber(this.toString().replace(".", ""));
     }
 
     @Override
@@ -162,5 +171,10 @@ public class BigFractional {
     public boolean equals(Object obj) {
         return this.fraction.equals(((BigFractional) obj).fraction) &&
                 this.wholePart.equals(((BigFractional) obj).wholePart);
+    }
+
+    @Override
+    public int hashCode() {
+        return this.wholePart.hashCode() + this.fraction.hashCode() * this.toString().hashCode();
     }
 }

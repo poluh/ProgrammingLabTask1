@@ -35,10 +35,6 @@ public class BigNumber implements Comparable<BigNumber> {
     // Negative or positive number
     private int notation;
 
-    public BigNumber(long l) {
-
-    }
-
 
     /**
      * The main method for specifying BigNumber.
@@ -249,8 +245,8 @@ public class BigNumber implements Comparable<BigNumber> {
                     false);
             secondBuf = new BigNumber(other.appendZeros(Math.abs(other.length() - length), !fraction),
                     false);
-            log.log(Level.FINE, "First number for sum = {0}", firstBuf);
-            log.log(Level.FINE, "Second number for sum = {0}", secondBuf);
+            log.log(Level.INFO, "First number for sum = {0}", firstBuf);
+            log.log(Level.INFO, "Second number for sum = {0}", secondBuf);
             ArrayBigNumber numberBuf = new ArrayBigNumber();
             int remember = 0;
             for (int i = columnBlocks - 1; i >= 0; i--) {
@@ -374,7 +370,6 @@ public class BigNumber implements Comparable<BigNumber> {
         firstBuf = buf;
 
         BigNumber answer = new BigNumber("0");
-        int length = secondBuf.length();
         for (int i = firstBuf.columnBlocks() - 1; i >= 0; i--) {
             for (int j = secondBuf.columnBlocks() - 1; j >= 0; j--) {
                 answer = answer.plus(new BigNumber(String.valueOf(timesOneDigit(firstBuf.get(i), secondBuf.get(j)))));
@@ -405,14 +400,12 @@ public class BigNumber implements Comparable<BigNumber> {
     @Override
     public int compareTo(BigNumber other) {
         boolean bothNegative = this.isNegative() && other.isNegative();
-        boolean oneNegative = this.isNegative() ^ other.isNegative();
+        if (this.isNegative() ^ other.isNegative()) return this.isNegative() ? -1 : 1;
         if (this.length() != other.length()) {
-            if (bothNegative && !oneNegative) {
+            if (bothNegative) {
                 return this.length() < other.length() ? 1 : -1;
-            } else if (!oneNegative) {
-                return this.length() > other.length() ? 1 : -1;
             } else {
-                return other.isNegative() ? 1 : -1;
+                return this.length() > other.length() ? 1 : -1;
             }
         } else {
             for (int i = 0; i < this.columnBlocks(); ++i) {

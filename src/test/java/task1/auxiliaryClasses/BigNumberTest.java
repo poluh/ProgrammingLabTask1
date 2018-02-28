@@ -92,6 +92,7 @@ class BigNumberTest {
         assertEquals(new BigNumber("-5748348"), new BigNumber("5748348").times(new BigNumber("-1")));
         assertEquals(new BigNumber("15129"), new BigNumber("-123").times(new BigNumber("-123")));
         assertEquals(new BigNumber("1519325480"), new BigNumber("1231220").times(new BigNumber("1234")));
+        assertEquals(new BigNumber("1525209"), new BigNumber("1231").times(new BigNumber("1239")));
     }
 
     @Test

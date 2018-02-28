@@ -4,12 +4,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.IllegalFormatException;
 import java.util.List;
-import java.util.regex.Pattern;
 
 public class ArrayBigNumber implements CollectionBigNumber<Integer> {
 
     private final int notation = 1000000000;
-    private final int lenOneNum =  (int) Math.ceil(Math.log10(notation + 0.5) - 1);
+    private final int lenOneNum = (int) Math.ceil(Math.log10(notation + 0.5) - 1);
     private List<Integer> storage = new ArrayList<>();
     private int size;
     private int flag;
@@ -59,7 +58,9 @@ public class ArrayBigNumber implements CollectionBigNumber<Integer> {
 
     @Override
     public int size() {
-        return lenOneNum * (size - 1) + (lenOneNum - flag);
+        return size == 1 ?
+                (int) Math.ceil(Math.log10(Math.abs(this.get(0)) + 0.5)) :
+                lenOneNum * (size - 1) + (lenOneNum - flag);
     }
 
     public int columnBlocks() {
@@ -114,7 +115,8 @@ public class ArrayBigNumber implements CollectionBigNumber<Integer> {
                     String pattern = "%0" + (lenOneNum - lenElement - (i == storage1.size() - 1 ? flag : 1)) + "d";
                     answer.append(pattern.contains("00") ? "" : String.format(pattern, 0));
                 }
-            } catch (IllegalFormatException ignored) { }
+            } catch (IllegalFormatException ignored) {
+            }
             answer.append(element);
         }
         return answer.toString();
