@@ -18,6 +18,10 @@ public class ArrayBigNumber implements CollectionBigNumber<Integer> {
         this.add(string);
     }
 
+    public ArrayBigNumber(int number) {
+        this.add(number);
+    }
+
     public ArrayBigNumber() {
     }
 

@@ -35,6 +35,10 @@ public class BigNumber implements Comparable<BigNumber> {
     // Negative or positive number
     private int notation;
 
+    public BigNumber(long l) {
+
+    }
+
 
     /**
      * The main method for specifying BigNumber.
@@ -336,16 +340,11 @@ public class BigNumber implements Comparable<BigNumber> {
 
     }
 
-    private BigNumber timesOneDigit(int num) {
-        if (num == 1) return this;
-        if (num == 0) return new BigNumber(appendZeros(1, false), false);
+    private ArrayBigNumber timesOneDigit(int first, int second) {
+        if (first == 1) return new ArrayBigNumber(String.valueOf(first));
+        if (first == 0) return appendZeros(1, false);
 
-        BigNumber answer = new BigNumber("0");
-        while (num > 0) {
-            answer = answer.plus(this);
-            --num;
-        }
-        return answer;
+        return new ArrayBigNumber(String.valueOf((long) first * (long) second));
     }
 
     /**
@@ -373,13 +372,13 @@ public class BigNumber implements Comparable<BigNumber> {
         BigNumber buf = maxOf(firstBuf, secondBuf);
         secondBuf = minOf(firstBuf, secondBuf);
         firstBuf = buf;
-        int columnBlocks = Math.max(this.columnBlocks(), other.columnBlocks());
 
         BigNumber answer = new BigNumber("0");
         int length = secondBuf.length();
-        for (int i = columnBlocks - 1; i >= 0; i--) {
-            answer = answer.plus(new BigNumber(firstBuf.timesOneDigit(secondBuf.get(i))
-                    .appendZeros(columnBlocks - i, false), false));
+        for (int i = firstBuf.columnBlocks() - 1; i >= 0; i--) {
+            for (int j = secondBuf.columnBlocks() - 1; j >= 0; j--) {
+                answer = answer.plus(new BigNumber(String.valueOf(timesOneDigit(firstBuf.get(i), secondBuf.get(j)))));
+            }
         }
         answer.setNegative(negative);
         return answer;
