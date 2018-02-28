@@ -130,7 +130,7 @@ public class BigNumber implements Comparable<BigNumber> {
     }
 
     public int length() {
-        return this.number.size();
+        return this.number.length();
     }
 
 
@@ -197,7 +197,7 @@ public class BigNumber implements Comparable<BigNumber> {
     }
 
     public boolean isEmpty() {
-        return this.number.size() == 0;
+        return this.number.length() == 0;
     }
 
     public static BigNumber maxOf(BigNumber first, BigNumber second) {

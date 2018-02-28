@@ -45,13 +45,13 @@ class BigFractionalTest {
                 new BigFractional("123.9").times(new BigFractional("123.1")));
         assertEquals(new BigFractional("-321.23"),
                 new BigFractional("321.23").times(new BigFractional("-1.0")));
-        assertEquals(new BigFractional("8647.66051"),
+        assertEquals(new BigFractional("9208.051"),
                 new BigFractional("-213.1").times(new BigFractional("-43.21")));
     }
 
     @Test
     void round() {
-        assertEquals(new BigFractional("123.12"), new BigFractional("123.123").round(2));
-        assertEquals(new BigFractional("123.13"), new BigFractional("123.126").round(2));
+        assertEquals(new BigFractional("123.12"), new BigFractional("123.123").round(1));
+        assertEquals(new BigFractional("123.13"), new BigFractional("123.126").round(1));
     }
 }

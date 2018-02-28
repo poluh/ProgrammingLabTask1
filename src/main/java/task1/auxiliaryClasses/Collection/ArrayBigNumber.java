@@ -10,6 +10,7 @@ public class ArrayBigNumber implements CollectionBigNumber<Integer> {
     private final int notation = 1000000000;
     private final int lenOneNum = (int) Math.ceil(Math.log10(notation + 0.5) - 1);
     private List<Integer> storage = new ArrayList<>();
+    private int lengthNum = 0;
     private int size;
     private int flag;
 
@@ -27,6 +28,7 @@ public class ArrayBigNumber implements CollectionBigNumber<Integer> {
     @Override
     public void add(String added) {
         int addedLength = added.length();
+        this.lengthNum = addedLength;
         for (int i = 0; i < addedLength; i += lenOneNum) {
             Integer add = Integer.valueOf(added.substring(i, (addedLength > i + lenOneNum) ? i + lenOneNum : addedLength));
             if (i + lenOneNum >= addedLength) {
@@ -57,10 +59,8 @@ public class ArrayBigNumber implements CollectionBigNumber<Integer> {
     }
 
     @Override
-    public int size() {
-        return size == 1 ?
-                (int) Math.ceil(Math.log10(Math.abs(this.get(0)) + 0.5)) :
-                lenOneNum * (size - 1) + (lenOneNum - flag);
+    public int length() {
+        return this.lengthNum;
     }
 
     public int columnBlocks() {

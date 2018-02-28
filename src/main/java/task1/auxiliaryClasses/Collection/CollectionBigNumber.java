@@ -3,7 +3,7 @@ package task1.auxiliaryClasses.Collection;
 public interface CollectionBigNumber<E> {
 
     E get(int index);
-    int size();
+    int length();
     boolean isEmpty();
     void set(int index, int object);
     void remove(int index);

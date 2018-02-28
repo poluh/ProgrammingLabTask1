@@ -1,8 +1,5 @@
 package task1.auxiliaryClasses;
 
-import task1.auxiliaryClasses.Collection.ArrayBigNumber;
-
-import javax.jws.soap.SOAPBinding;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
@@ -63,6 +60,10 @@ public class BigFractional {
         }
     }
 
+    public BigFractional copy() {
+        return new BigFractional(this.toString());
+    }
+
     public boolean isNegative() {
         return this.wholePart.isNegative();
     }
@@ -100,7 +101,7 @@ public class BigFractional {
 
         BigNumber fraction = this.fraction.plus(other.fraction, true);
         BigNumber wholePart;
-        if (fraction.length() > maxOf(this.fraction, other.fraction).length()) {
+        if (fraction.toString().length() > Math.max(this.fraction.length(), other.fraction.length())) {
             wholePart = this.wholePart.plus(other.wholePart).plus(1);
             fraction.setNumber(fraction.toString().substring(1));
         } else {
@@ -130,6 +131,14 @@ public class BigFractional {
 
     public BigFractional times(BigFractional other, int border) {
 
+        Pattern pattern = Pattern.compile("-?1\\.0+");
+        if (pattern.matcher(this.toString()).matches() ^ pattern.matcher(other.toString()).matches()) {
+            BigFractional buf = pattern.matcher(this.toString()).matches() ? other : this;
+            BigFractional matches = this.equals(buf) ? other : this;
+            boolean negative = matches.isNegative();
+            return new BigFractional((negative ? "-" : "") + buf.toString());
+        }
+
         String[] strings = {this.toString(), other.toString()};
         log.log(Level.INFO, "{0} times {1}", strings);
 
@@ -140,7 +149,8 @@ public class BigFractional {
         String timesStr = times.toString();
         log.log(Level.INFO, "Number without dot={0}", timesStr);
 
-        int tailLength = times.length() - this.fraction.length() + other.fraction.length() - 3;
+        int tailLength = times.length() - (this.fraction.length() + other.fraction.length() + 1);
+
         StringBuilder fraction = new StringBuilder();
         StringBuilder wholePart = new StringBuilder();
 
