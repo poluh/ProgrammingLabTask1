@@ -52,7 +52,7 @@ public class BigNumber implements Comparable<BigNumber> {
             this.number = number;
             this.negative = negative;
             this.notation = this.getArray().getNotation();
-            log.log(Level.INFO, "Create new BigNumber={0}", this);
+            log.log(Level.FINE, "Create new BigNumber={0}", this);
         } catch (NumberFormatException ex) {
             log.log(Level.SEVERE, "Exception: Invalid format number({0}).", number);
         }
@@ -231,7 +231,6 @@ public class BigNumber implements Comparable<BigNumber> {
         boolean oneNegative = this.isNegative() ^ other.isNegative();
         BigNumber firstBuf = delNegative(this);
         BigNumber secondBuf = delNegative(other);
-        System.out.println(this.length());
         if (oneNegative) {
             if (firstBuf.equals(secondBuf)) return new BigNumber("0");
             if (firstBuf.compareTo(secondBuf) > 0) {
@@ -246,8 +245,8 @@ public class BigNumber implements Comparable<BigNumber> {
                     false);
             secondBuf = new BigNumber(other.appendZeros(Math.abs(other.length() - length), !fraction),
                     false);
-            log.log(Level.INFO, "First number for sum = {0}", firstBuf);
-            log.log(Level.INFO, "Second number for sum = {0}", secondBuf);
+            log.log(Level.FINE, "First number for sum = {0}", firstBuf);
+            log.log(Level.FINE, "Second number for sum = {0}", secondBuf);
             ArrayBigNumber numberBuf = new ArrayBigNumber();
             int remember = 0;
             for (int i = columnBlocks - 1; i >= 0; i--) {
@@ -263,7 +262,8 @@ public class BigNumber implements Comparable<BigNumber> {
             numberBuf.add(remember == 1 ? "1" : "");
             numberBuf.setFlag(Math.min(this.getArray().getFlag(), other.getArray().getFlag()));
             numberBuf.reverse();
-            return new BigNumber(fraction ? numberBuf : new ArrayBigNumber(removeZeros(numberBuf.toString())), bothNegative);
+            return new BigNumber(fraction ? numberBuf : new ArrayBigNumber(removeZeros(numberBuf.toString())),
+                    bothNegative);
         }
     }
 
@@ -327,7 +327,7 @@ public class BigNumber implements Comparable<BigNumber> {
            return secondBuf.minus(firstBuf);
         }
         bufNumber.reverse();
-        log.log(Level.INFO, "Answer number = {0}", bufNumber.toString());
+        log.log(Level.FINE, "Answer number = {0}", bufNumber.toString());
         if (!factional) {
             return new BigNumber((this.compareTo(other) > 0 ? "" : "-") + removeZeros(bufNumber.toString()));
         } else {
@@ -337,7 +337,6 @@ public class BigNumber implements Comparable<BigNumber> {
     }
 
     private BigNumber timesOneDigit(int num) {
-        if (num < 0 || num > 9) throw new IllegalArgumentException("The number must be one-digit");
         if (num == 1) return this;
         if (num == 0) return new BigNumber(appendZeros(1, false), false);
 
@@ -353,7 +352,7 @@ public class BigNumber implements Comparable<BigNumber> {
      * A method for multiplying two BigNumber
      * (also used in the times () method for BigNumberFraction).
      * Can multiply negative numbers. Uses the optional timesOneDigit method,
-     * which takes a single-digit (0-9) number to be multiplied by it.
+     * which takes number to be multiplied by it.
      * When multiplying by 10, to some extent uses appendZeros to get the result faster.
      *
      * @param other BigNumber for times
@@ -374,12 +373,13 @@ public class BigNumber implements Comparable<BigNumber> {
         BigNumber buf = maxOf(firstBuf, secondBuf);
         secondBuf = minOf(firstBuf, secondBuf);
         firstBuf = buf;
+        int columnBlocks = Math.max(this.columnBlocks(), other.columnBlocks());
 
         BigNumber answer = new BigNumber("0");
         int length = secondBuf.length();
-        for (int i = length; i > 0; i--) {
+        for (int i = columnBlocks - 1; i >= 0; i--) {
             answer = answer.plus(new BigNumber(firstBuf.timesOneDigit(secondBuf.get(i))
-                    .appendZeros(length - i, false), false));
+                    .appendZeros(columnBlocks - i, false), false));
         }
         answer.setNegative(negative);
         return answer;
