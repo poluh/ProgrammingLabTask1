@@ -17,14 +17,19 @@ public class ArrayBigNumber implements CollectionBigNumber<Integer> {
      */
 
     private final int notation = 1000000000;
+    // The maximum capacity of the unit is indicated in notation (capacity + 1).
     private final int lenOneNum = (int) Math.ceil(Math.log10(notation + 0.5) - 1);
+    // The maximum length of one block
     private List<Integer> storage = new ArrayList<>();
     private int length = 0;
+    // Number of digits in number
     private int size;
+    // Number of blocks
     private int flag;
+    // Number of digits in the last block
 
-    public ArrayBigNumber(String string) {
-        this.add(string);
+    public ArrayBigNumber(String number) {
+        this.add(number);
     }
 
     public ArrayBigNumber(int number) {
@@ -39,7 +44,8 @@ public class ArrayBigNumber implements CollectionBigNumber<Integer> {
         int addedLength = added.length();
         this.length = addedLength;
         for (int i = 0; i < addedLength; i += lenOneNum) {
-            Integer add = Integer.valueOf(added.substring(i, (addedLength > i + lenOneNum) ? i + lenOneNum : addedLength));
+            Integer add =
+                    Integer.valueOf(added.substring(i, (addedLength > i + lenOneNum) ? i + lenOneNum : addedLength));
             if (i + lenOneNum >= addedLength) {
                 flag = (i + lenOneNum) - addedLength + 1;
             }
@@ -59,7 +65,7 @@ public class ArrayBigNumber implements CollectionBigNumber<Integer> {
 
     @Override
     public void set(int index, int object) {
-        if (this.storage.get(index) != null && object < this.notation && object > 0) {
+        if (this.storage.get(index) != null && object < this.notation && object >= 0) {
             this.storage.set(index, object);
         }
     }
@@ -122,14 +128,14 @@ public class ArrayBigNumber implements CollectionBigNumber<Integer> {
     @Override
     public String toString() {
         StringBuilder answer = new StringBuilder();
-        List<Integer> storage1 = this.storage;
-        for (int i = 0; i < storage1.size(); i++) {
-            Integer element = storage1.get(i);
+        List<Integer> bufStorage = this.storage;
+        for (int i = 0; i < bufStorage.size(); i++) {
+            Integer element = bufStorage.get(i);
             int lenElement = (int) Math.ceil(Math.log10(element + 0.5) - 1);
             try {
                 if (lenElement < lenOneNum - 1) {
                     if (element == 0) lenElement++;
-                    String pattern = "%0" + (lenOneNum - lenElement - (i == storage1.size() - 1 ? flag : 1)) + "d";
+                    String pattern = "%0" + (lenOneNum - lenElement - (i == bufStorage.size() - 1 ? flag : 1)) + "d";
                     answer.append(pattern.contains("00") ? "" : String.format(pattern, 0));
                 }
             } catch (IllegalFormatException ignored) {

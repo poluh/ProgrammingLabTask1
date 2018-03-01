@@ -28,25 +28,6 @@ public class BigFractional implements Comparable<BigFractional>, BigInterface<Bi
     private BigNumber whole;
     private BigNumber fraction;
 
-    /**
-     * A special method is the creator used by the constructors.
-     * Gets on the input two BigNumber, integer and fractional parts respectively.
-     *
-     * @param whole    First part
-     * @param fraction Second part
-     */
-
-    private void create(BigNumber whole, BigNumber fraction) {
-        try {
-            this.whole = whole;
-            this.fraction = fraction;
-            log.log(Level.INFO, "Create new BigFractional = {0}", this);
-        } catch (NumberFormatException ex) {
-            String[] strings = {whole.toString(), fraction.toString()};
-            log.log(Level.SEVERE, "Exception: Invalid format number({0}.{1}).", strings);
-        }
-    }
-
     public BigFractional(BigNumber whole, BigNumber fraction) {
         create(whole, fraction);
     }
@@ -68,6 +49,25 @@ public class BigFractional implements Comparable<BigFractional>, BigInterface<Bi
             create(new BigNumber(number), new BigNumber("0"));
         } else {
             throw new NumberFormatException("Invalid format.");
+        }
+    }
+
+    /**
+     * A special method is the creator used by the constructors.
+     * Gets on the input two BigNumber, integer and fractional parts respectively.
+     *
+     * @param whole    First part
+     * @param fraction Second part
+     */
+
+    private void create(BigNumber whole, BigNumber fraction) {
+        try {
+            this.whole = whole;
+            this.fraction = fraction;
+            log.log(Level.INFO, "Create new BigFractional = {0}", this);
+        } catch (NumberFormatException ex) {
+            String[] strings = {whole.toString(), fraction.toString()};
+            log.log(Level.SEVERE, "Exception: Invalid format number({0}.{1}).", strings);
         }
     }
 

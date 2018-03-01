@@ -37,28 +37,6 @@ public class BigNumber implements Comparable<BigNumber>, BigInterface<BigNumber>
 
 
     /**
-     * The main method for specifying BigNumber.
-     * Logs and initializes class fields.
-     * <p>
-     * Gets the input ArrayBigNumber -
-     * a special storage class for large numbers based on IntegerObject.
-     *
-     * @param number   The number you want to write
-     * @param negative Its sign (negative (false) or positive number (true))
-     */
-
-    private void create(ArrayBigNumber number, boolean negative) {
-        try {
-            this.number = number;
-            this.negative = negative;
-            this.notation = this.getArray().getNotation();
-            log.log(Level.FINE, "Create new BigNumber={0}", this);
-        } catch (NumberFormatException ex) {
-            log.log(Level.SEVERE, "Exception: Invalid format number({0}).", number);
-        }
-    }
-
-    /**
      * One of the constructors for creating BigNumber.
      * Accepts a string representation of a number, for example "9123929" or "-12321442".
      * Interprets the string in ArrayBigNumber,
@@ -92,6 +70,51 @@ public class BigNumber implements Comparable<BigNumber>, BigInterface<BigNumber>
         create(number, negative);
     }
 
+    /**
+     * Method for deleting the minus of a number, returning a copy without denying.
+     *
+     * @param forDel BigNumber for del negative
+     * @return copy original BigNumber without negative
+     */
+
+    public static BigNumber delNegative(BigNumber forDel) {
+        boolean forDelNegative = forDel.negative;
+        forDel.delNegative();
+        BigNumber answer = forDel.copy();
+        forDel.negative = forDelNegative;
+        return answer;
+    }
+
+    public static BigNumber maxOf(BigNumber first, BigNumber second) {
+        return first.compareTo(second) > 0 ? first : second;
+    }
+
+    public static BigNumber minOf(BigNumber first, BigNumber second) {
+        return first.compareTo(second) > 0 ? second : first;
+    }
+
+    /**
+     * The main method for specifying BigNumber.
+     * Logs and initializes class fields.
+     * <p>
+     * Gets the input ArrayBigNumber -
+     * a special storage class for large numbers based on IntegerObject.
+     *
+     * @param number   The number you want to write
+     * @param negative Its sign (negative (false) or positive number (true))
+     */
+
+    private void create(ArrayBigNumber number, boolean negative) {
+        try {
+            this.number = number;
+            this.negative = negative;
+            this.notation = this.getArray().getNotation();
+            log.log(Level.FINE, "Create new BigNumber={0}", this);
+        } catch (NumberFormatException ex) {
+            log.log(Level.SEVERE, "Exception: Invalid format number({0}).", number);
+        }
+    }
+
     @Override
     public BigNumber copy() {
         BigNumber answer = new BigNumber("0");
@@ -102,6 +125,10 @@ public class BigNumber implements Comparable<BigNumber>, BigInterface<BigNumber>
 
     public String getNumber() {
         return this.number.toString();
+    }
+
+    public void setNumber(String number) {
+        this.setNumber(new ArrayBigNumber(number));
     }
 
     public ArrayBigNumber getArray() {
@@ -116,10 +143,6 @@ public class BigNumber implements Comparable<BigNumber>, BigInterface<BigNumber>
         this.number = number;
     }
 
-    public void setNumber(String number) {
-        this.setNumber(new ArrayBigNumber(number));
-    }
-
     public int columnBlocks() {
         return this.number.columnBlocks();
     }
@@ -127,7 +150,6 @@ public class BigNumber implements Comparable<BigNumber>, BigInterface<BigNumber>
     public int length() {
         return this.number.length();
     }
-
 
     /**
      * The method of adding zeros before or after the number.
@@ -151,28 +173,13 @@ public class BigNumber implements Comparable<BigNumber>, BigInterface<BigNumber>
         return this.negative;
     }
 
-    public void delNegative() {
-        this.negative = false;
-    }
-
-    /**
-     * Method for deleting the minus of a number, returning a copy without denying.
-     *
-     * @param forDel BigNumber for del negative
-     * @return copy original BigNumber without negative
-     */
-
-    public static BigNumber delNegative(BigNumber forDel) {
-        boolean forDelNegative = forDel.negative;
-        forDel.delNegative();
-        BigNumber answer = forDel.copy();
-        forDel.negative = forDelNegative;
-        return answer;
-    }
-
     @Override
     public void setNegative(boolean negative) {
         this.negative = negative;
+    }
+
+    public void delNegative() {
+        this.negative = false;
     }
 
     @Override
@@ -180,18 +187,6 @@ public class BigNumber implements Comparable<BigNumber>, BigInterface<BigNumber>
         int roundNumber = (int) (this.get(border / this.getArray().getLenOneNum()) /
                 Math.pow(10, this.length() - border - 1) % 10);
         return roundNumber >= 5 ? this.plus(10 - roundNumber) : this.minus(roundNumber);
-    }
-
-    public boolean isEmpty() {
-        return this.number.length() == 0;
-    }
-
-    public static BigNumber maxOf(BigNumber first, BigNumber second) {
-        return first.compareTo(second) > 0 ? first : second;
-    }
-
-    public static BigNumber minOf(BigNumber first, BigNumber second) {
-        return first.compareTo(second) > 0 ? second : first;
     }
 
     public BigNumber plus(int other) {
@@ -262,7 +257,6 @@ public class BigNumber implements Comparable<BigNumber>, BigInterface<BigNumber>
         if (this.equals(other)) return new BigNumber("0");
 
         boolean bothNegative = this.isNegative() && other.isNegative();
-        boolean negative = this.compareTo(other) < 0;
 
         BigNumber firstBuf = delNegative(this);
         BigNumber secondBuf = delNegative(other);
