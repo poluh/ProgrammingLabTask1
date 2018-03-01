@@ -4,8 +4,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
-import static task1.auxiliaryClasses.BigNumber.maxOf;
-
 /**
  * This class is based on the magnificent BigNumber.
  * The plus and minus methods (and to some extent also the times)
@@ -15,37 +13,50 @@ import static task1.auxiliaryClasses.BigNumber.maxOf;
  * ensuring accuracy of calculations just up to 2,147,483,647 decimal places.
  */
 
-public class BigFractional {
+public class BigFractional implements Comparable<BigFractional>, BigInterface<BigFractional> {
     private static Logger log = Logger.getLogger(BigFractional.class.getName());
 
     /**
      * My code is self-documenting.
+     * <p>
+     * (Joke, lol. Check BigInterface)
+     * <p>
+     * All non-unique methods are commented on there.
+     * Here are designers and unique methods.
      */
 
-    private BigNumber wholePart;
+    private BigNumber whole;
     private BigNumber fraction;
 
-    private void create(BigNumber wholePart, BigNumber fraction) {
+    /**
+     * A special method is the creator used by the constructors.
+     * Gets on the input two BigNumber, integer and fractional parts respectively.
+     *
+     * @param whole    First part
+     * @param fraction Second part
+     */
+
+    private void create(BigNumber whole, BigNumber fraction) {
         try {
-            this.wholePart = wholePart;
+            this.whole = whole;
             this.fraction = fraction;
             log.log(Level.INFO, "Create new BigFractional = {0}", this);
         } catch (NumberFormatException ex) {
-            String[] strings = {wholePart.toString(), fraction.toString()};
+            String[] strings = {whole.toString(), fraction.toString()};
             log.log(Level.SEVERE, "Exception: Invalid format number({0}.{1}).", strings);
         }
     }
 
-    public BigFractional(BigNumber wholePart, BigNumber fraction) {
-        create(wholePart, fraction);
+    public BigFractional(BigNumber whole, BigNumber fraction) {
+        create(whole, fraction);
     }
 
-    public BigFractional(String wholePart, String fraction) {
+    public BigFractional(String whole, String fraction) {
         Pattern pattern = Pattern.compile("-?\\d+");
-        if (pattern.matcher(wholePart).matches() && pattern.matcher(fraction).matches()) {
-            create(new BigNumber(wholePart), new BigNumber(fraction));
+        if (pattern.matcher(whole).matches() && pattern.matcher(fraction).matches()) {
+            create(new BigNumber(whole), new BigNumber(fraction));
         } else {
-            throw new NumberFormatException("Invalid format " + wholePart + " " + fraction);
+            throw new NumberFormatException("Invalid format " + whole + " " + fraction);
         }
     }
 
@@ -60,40 +71,53 @@ public class BigFractional {
         }
     }
 
+    @Override
     public BigFractional copy() {
         return new BigFractional(this.toString());
     }
 
+    @Override
     public boolean isNegative() {
-        return this.wholePart.isNegative();
+        return this.whole.isNegative();
     }
 
-    private void setNegative(boolean negative) {
-        log.info("Change negative.");
-        this.wholePart.setNegative(negative);
+    @Override
+    public void setNegative(boolean negative) {
+        log.fine("Change negative.");
+        this.whole.setNegative(negative);
     }
 
+    @Override
     public BigFractional round(int border) {
         if (border == 0 || border >= this.fraction.length()) {
             return this;
         } else {
-            return new BigFractional(this.wholePart, this.fraction.round(border));
+            return new BigFractional(this.whole, this.fraction.round(border));
         }
     }
 
+    @Override
     public BigFractional plus(BigFractional other) {
         return this.plus(other, 0);
     }
 
+    /**
+     * This method has an additional parameter - border.
+     * The value to which the result should be rounded.
+     *
+     * @param other  BigFraction for sum
+     * @param border Index of the rounding sign
+     * @return new BigFraction
+     */
     public BigFractional plus(BigFractional other, int border) {
-        if (this.wholePart.isNegative() || other.wholePart.isNegative()) {
-            if (this.wholePart.isNegative() && !other.wholePart.isNegative()) {
+        if (this.whole.isNegative() || other.whole.isNegative()) {
+            if (this.whole.isNegative() && !other.whole.isNegative()) {
                 String[] strings = {other.toString(), this.toString()};
                 log.log(Level.INFO, "Transformation of expression= {0} - {1}", strings);
                 BigFractional thisBuf = this.copy();
-                thisBuf.wholePart.delNegative();
+                thisBuf.whole.delNegative();
                 return other.minus(thisBuf, border);
-            } else if (!this.wholePart.isNegative() && other.wholePart.isNegative()) {
+            } else if (!this.whole.isNegative() && other.whole.isNegative()) {
                 String[] strings = {this.toString(), other.toString()};
                 log.log(Level.INFO, "Transformation of expression= {0} - {1}", strings);
                 return this.minus(other, border);
@@ -103,19 +127,28 @@ public class BigFractional {
         BigNumber fraction = this.fraction.plus(other.fraction, true);
         BigNumber wholePart;
         if (fraction.toString().length() > Math.max(this.fraction.length(), other.fraction.length())) {
-            wholePart = this.wholePart.plus(other.wholePart).plus(1);
+            wholePart = this.whole.plus(other.whole).plus(1);
             fraction.setNumber(fraction.toString().substring(1));
         } else {
-            wholePart = this.wholePart.plus(other.wholePart);
+            wholePart = this.whole.plus(other.whole);
         }
 
         return new BigFractional(wholePart, fraction).round(border);
     }
 
+    @Override
     public BigFractional minus(BigFractional other) {
         return this.minus(other, 0);
     }
 
+    /**
+     * This method has an additional parameter - border.
+     * The value to which the result should be rounded.
+     *
+     * @param other  BigFraction for subtraction
+     * @param border Index of the rounding sign
+     * @return new BigFraction
+     */
     public BigFractional minus(BigFractional other, int border) {
         int length = Math.max(this.fraction.length(), other.fraction.length());
         BigNumber firstBuf = new BigNumber(this.copy().fraction
@@ -123,18 +156,28 @@ public class BigFractional {
         BigNumber secondBuf = new BigNumber(other.copy().fraction
                 .appendZeros(length - other.fraction.length(), false), false);
         BigNumber fraction = (this.isNegative() ^ other.isNegative()) ?
-                this.fraction.plus(other.fraction) :firstBuf.minus(secondBuf, true);
+                this.fraction.plus(other.fraction) : firstBuf.minus(secondBuf, true);
+        // Alignment relative to the largest fractional part
 
-        BigNumber wholePart = this.wholePart.minus(other.wholePart);
+        BigNumber wholePart = this.whole.minus(other.whole);
         fraction.delNegative();
 
         return new BigFractional(wholePart, fraction).round(border);
     }
 
+    @Override
     public BigFractional times(BigFractional other) {
         return this.times(other, 0);
     }
 
+    /**
+     * This method has an additional parameter - border.
+     * The value to which the result should be rounded.
+     *
+     * @param other  BigFraction for times
+     * @param border Index of the rounding sign
+     * @return new BigFraction
+     */
     public BigFractional times(BigFractional other, int border) {
 
         Pattern pattern = Pattern.compile("-?1\\.0+");
@@ -174,23 +217,39 @@ public class BigFractional {
         return answer;
     }
 
+    /**
+     * Сonverts a fractional number into an ordinary number,
+     * discarding a point.
+     * Example: 123.456 => 123456
+     *
+     * @return new BigNumber
+     */
+
     public BigNumber toBigNumber() {
         return new BigNumber(this.toString().replace(".", ""));
     }
 
     @Override
     public String toString() {
-        return wholePart + "." + fraction;
+        return whole + "." + fraction;
     }
 
     @Override
     public boolean equals(Object obj) {
         return this.fraction.equals(((BigFractional) obj).fraction) &&
-                this.wholePart.equals(((BigFractional) obj).wholePart);
+                this.whole.equals(((BigFractional) obj).whole);
     }
 
     @Override
     public int hashCode() {
-        return this.wholePart.hashCode() + this.fraction.hashCode() * this.toString().hashCode();
+        return this.whole.hashCode() + this.fraction.hashCode() * this.toString().hashCode();
+    }
+
+
+    @Override
+    public int compareTo(BigFractional other) {
+        int firstCompare = this.whole.compareTo(other.whole);
+        return firstCompare == 0 ? this.fraction.compareTo(other.fraction) : firstCompare;
+
     }
 }

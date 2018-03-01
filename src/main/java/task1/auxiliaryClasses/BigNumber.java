@@ -25,7 +25,7 @@ import java.util.stream.IntStream;
  * PLEASE DO NOT KEEP THE NUMBER OF NUMBER, THE RESULT OF OPERATIONS ON WHICH CAN BE PLACED IN LONG OR INT
  */
 
-public class BigNumber implements Comparable<BigNumber> {
+public class BigNumber implements Comparable<BigNumber>, BigInterface<BigNumber> {
 
     private static Logger log = Logger.getLogger(BigFractional.class.getName());
 
@@ -92,12 +92,7 @@ public class BigNumber implements Comparable<BigNumber> {
         create(number, negative);
     }
 
-    /**
-     * The method of copying a number. Called on BigNumber, returning an identical BigNumber
-     *
-     * @return new BigNumber even old BigNumber
-     */
-
+    @Override
     public BigNumber copy() {
         BigNumber answer = new BigNumber("0");
         answer.negative = this.negative;
@@ -151,6 +146,7 @@ public class BigNumber implements Comparable<BigNumber> {
         return buf.number;
     }
 
+    @Override
     public boolean isNegative() {
         return this.negative;
     }
@@ -174,17 +170,12 @@ public class BigNumber implements Comparable<BigNumber> {
         return answer;
     }
 
+    @Override
     public void setNegative(boolean negative) {
         this.negative = negative;
     }
 
-    /**
-     * A method that rounds a number to a specific character.
-     * Rounds the original number by changing the original (!) number.
-     *
-     * @param border The position of the number to be rounded (including the number itself)
-     */
-
+    @Override
     public BigNumber round(int border) {
         int roundNumber = (int) (this.get(border / this.getArray().getLenOneNum()) /
                 Math.pow(10, this.length() - border - 1) % 10);
@@ -207,18 +198,10 @@ public class BigNumber implements Comparable<BigNumber> {
         return this.plus(new BigNumber(String.valueOf(other)));
     }
 
+    @Override
     public BigNumber plus(BigNumber other) {
         return this.plus(other, false);
     }
-
-    /**
-     * The method of adding two numbers, can take both both negative numbers,
-     * and one negative with a positive ordinary.
-     * Has an overloaded version for adding an ordinary int-number if necessary.
-     *
-     * @param other BigNumber for sum
-     * @return result sum
-     */
 
     public BigNumber plus(BigNumber other, boolean fraction) {
 
@@ -270,21 +253,10 @@ public class BigNumber implements Comparable<BigNumber> {
         return minus(new BigNumber(String.valueOf(other)), false);
     }
 
+    @Override
     public BigNumber minus(BigNumber other) {
         return minus(other, false);
     }
-
-    /**
-     * A method for subtracting two numbers,
-     * which receives fraction = true if the "tails" (numbers after the comma)
-     * are subtracted for the BigNumberFraction class.
-     * Can subtract both two negative numbers, and negative with positive.
-     * It has two overloaded methods, for subtracting the usual int-number and BigNumber-numbers.
-     *
-     * @param other     BigNumber for subtraction
-     * @param factional Option. For BigNumberFraction
-     * @return result subtraction
-     */
 
     public BigNumber minus(BigNumber other, boolean factional) {
         if (this.equals(other)) return new BigNumber("0");
@@ -319,7 +291,7 @@ public class BigNumber implements Comparable<BigNumber> {
                 }
             }
         } else {
-           return secondBuf.minus(firstBuf);
+            return secondBuf.minus(firstBuf);
         }
         bufNumber.reverse();
         log.log(Level.FINE, "Answer number = {0}", bufNumber.toString());
@@ -338,17 +310,7 @@ public class BigNumber implements Comparable<BigNumber> {
         return new ArrayBigNumber(String.valueOf((long) first * (long) second));
     }
 
-    /**
-     * A method for multiplying two BigNumber
-     * (also used in the times () method for BigNumberFraction).
-     * Can multiply negative numbers. Uses the optional timesOneDigit method,
-     * which takes number to be multiplied by it.
-     * When multiplying by 10, to some extent uses appendZeros to get the result faster.
-     *
-     * @param other BigNumber for times
-     * @return result times
-     */
-
+    @Override
     public BigNumber times(BigNumber other) {
         boolean negative = this.isNegative() ^ other.isNegative();
 
