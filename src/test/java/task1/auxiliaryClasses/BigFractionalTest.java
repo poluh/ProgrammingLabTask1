@@ -14,7 +14,7 @@ class BigFractionalTest {
         assertEquals(new BigFractional("14884.55301"),
                 new BigFractional("12.93").plus(new BigFractional("14871.62301")));
 
-        assertEquals(new BigFractional("-292012.781111"),
+        assertEquals(new BigFractional("-292012.535111"),
                 new BigFractional("-349321.123").plus(new BigFractional("57309.658111")));
 
         assertEquals(new BigFractional("-224084.404807"),
@@ -51,7 +51,7 @@ class BigFractionalTest {
 
     @Test
     void round() {
-        assertEquals(new BigFractional("123.12"), new BigFractional("123.123").round(1));
-        assertEquals(new BigFractional("123.13"), new BigFractional("123.126").round(1));
+        assertEquals(new BigFractional("123.120"), new BigFractional("123.123").round(2));
+        assertEquals(new BigFractional("123.130"), new BigFractional("123.126").round(2));
     }
 }

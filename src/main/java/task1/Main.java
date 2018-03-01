@@ -6,6 +6,5 @@ import task1.auxiliaryClasses.Collection.ArrayBigNumber;
 public class Main {
 
     public static void main(String[] args) {
-        System.out.println(new BigNumber("155301").length());
     }
 }

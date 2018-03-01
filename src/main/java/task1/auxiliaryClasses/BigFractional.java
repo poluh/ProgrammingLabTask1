@@ -77,8 +77,7 @@ public class BigFractional {
         if (border == 0 || border >= this.fraction.length()) {
             return this;
         } else {
-            this.fraction.round(border);
-            return this;
+            return new BigFractional(this.wholePart, this.fraction.round(border));
         }
     }
 
@@ -91,7 +90,9 @@ public class BigFractional {
             if (this.wholePart.isNegative() && !other.wholePart.isNegative()) {
                 String[] strings = {other.toString(), this.toString()};
                 log.log(Level.INFO, "Transformation of expression= {0} - {1}", strings);
-                return other.minus(this, border);
+                BigFractional thisBuf = this.copy();
+                thisBuf.wholePart.delNegative();
+                return other.minus(thisBuf, border);
             } else if (!this.wholePart.isNegative() && other.wholePart.isNegative()) {
                 String[] strings = {this.toString(), other.toString()};
                 log.log(Level.INFO, "Transformation of expression= {0} - {1}", strings);
@@ -116,8 +117,13 @@ public class BigFractional {
     }
 
     public BigFractional minus(BigFractional other, int border) {
+        int length = Math.max(this.fraction.length(), other.fraction.length());
+        BigNumber firstBuf = new BigNumber(this.copy().fraction
+                .appendZeros(length - this.fraction.length(), false), false);
+        BigNumber secondBuf = new BigNumber(other.copy().fraction
+                .appendZeros(length - other.fraction.length(), false), false);
         BigNumber fraction = (this.isNegative() ^ other.isNegative()) ?
-                this.fraction.plus(other.fraction) : this.fraction.minus(other.fraction, true);
+                this.fraction.plus(other.fraction) :firstBuf.minus(secondBuf, true);
 
         BigNumber wholePart = this.wholePart.minus(other.wholePart);
         fraction.delNegative();

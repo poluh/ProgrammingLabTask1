@@ -88,7 +88,7 @@ public class BigNumber implements Comparable<BigNumber> {
      * @param negative Its sign (negative (false) or positive number (true))
      */
 
-    private BigNumber(ArrayBigNumber number, boolean negative) {
+    public BigNumber(ArrayBigNumber number, boolean negative) {
         create(number, negative);
     }
 
@@ -122,7 +122,7 @@ public class BigNumber implements Comparable<BigNumber> {
     }
 
     public void setNumber(String number) {
-        this.setNumber(new BigNumber(number).number);
+        this.setNumber(new ArrayBigNumber(number));
     }
 
     public int columnBlocks() {
@@ -185,15 +185,10 @@ public class BigNumber implements Comparable<BigNumber> {
      * @param border The position of the number to be rounded (including the number itself)
      */
 
-    public void round(int border) {
-        int roundNumber = this.get(border);
-        BigNumber difference =
-                new BigNumber(String.valueOf((int) Math.pow(10 - roundNumber, this.length() - border - 1)));
-        if (roundNumber >= 5) {
-            this.plus(difference);
-        } else {
-            this.minus(difference);
-        }
+    public BigNumber round(int border) {
+        int roundNumber = (int) (this.get(border / this.getArray().getLenOneNum()) /
+                Math.pow(10, this.length() - border - 1) % 10);
+        return roundNumber >= 5 ? this.plus(10 - roundNumber) : this.minus(roundNumber);
     }
 
     public boolean isEmpty() {
@@ -308,9 +303,9 @@ public class BigNumber implements Comparable<BigNumber> {
                 int columnBlocks = Math.max(this.columnBlocks(), other.columnBlocks());
                 BigNumber buf = firstBuf.copy();
                 firstBuf = new BigNumber(maxOf(firstBuf, secondBuf)
-                        .appendZeros(length - firstBuf.length(), true), false);
-                secondBuf = new BigNumber(minOf(secondBuf, buf).
-                        appendZeros(length - secondBuf.length(), true), false);
+                        .appendZeros(length - firstBuf.length(), !factional), false);
+                secondBuf = new BigNumber(minOf(secondBuf, buf)
+                        .appendZeros(length - secondBuf.length(), !factional), false);
                 int remember = 0;
                 for (int i = columnBlocks - 1; i >= 0; i--) {
                     int addedNum = firstBuf.get(i) - secondBuf.get(i) - remember;
