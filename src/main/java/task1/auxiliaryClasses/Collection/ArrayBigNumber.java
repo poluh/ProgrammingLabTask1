@@ -7,6 +7,15 @@ import java.util.List;
 
 public class ArrayBigNumber implements CollectionBigNumber<Integer> {
 
+    /**
+     * This collection is a variant of storing a large number of blocks,
+     * in other words, translating a large number into another notation
+     * system with the base notation.
+     * The maximum capacity of the unit is indicated in notation (capacity + 1).
+     * Proceeding from this, the maximum length of one block is calculated,
+     * as well as the storage for the blocks.
+     */
+
     private final int notation = 1000000000;
     private final int lenOneNum = (int) Math.ceil(Math.log10(notation + 0.5) - 1);
     private List<Integer> storage = new ArrayList<>();
@@ -50,12 +59,16 @@ public class ArrayBigNumber implements CollectionBigNumber<Integer> {
 
     @Override
     public void set(int index, int object) {
-        // TODO
+        if (this.storage.get(index) != null && object < this.notation && object > 0) {
+            this.storage.set(index, object);
+        }
     }
 
     @Override
     public void remove(int index) {
-        // TODO
+        if (this.storage.get(index) != null) {
+            this.storage.remove(index);
+        }
     }
 
     @Override
