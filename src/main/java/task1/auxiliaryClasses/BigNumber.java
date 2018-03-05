@@ -240,6 +240,31 @@ public class BigNumber implements Comparable<BigNumber>, BigInterface<BigNumber>
         }
     }
 
+    @Override
+    public void inc() {
+        this.smallOperation(true);
+    }
+
+    @Override
+    public void dec() {
+        this.smallOperation(false);
+    }
+
+
+    private void smallOperation(boolean operator) {
+        ArrayBigNumber thisArray = this.getArray();
+        int lastBlock = thisArray.get(thisArray.columnBlocks() - 1);
+        if (lastBlock < this.notation - (operator ? 1 : 0)) {
+            thisArray.set(thisArray.columnBlocks() - 1, lastBlock + (operator ? 1 : -1));
+        } else {
+            if (operator) {
+                this.plus(1);
+            } else {
+                this.minus(1);
+            }
+        }
+    }
+
     private String removeZeros(String number) {
         return number.replaceFirst("^(0)+", "");
     }
@@ -328,6 +353,12 @@ public class BigNumber implements Comparable<BigNumber>, BigInterface<BigNumber>
         }
         answer.setNegative(negative);
         return answer;
+    }
+
+    public BigNumber division(BigNumber other) {
+        BigNumber answer = new BigNumber("0");
+        return answer;
+
     }
 
     @Override

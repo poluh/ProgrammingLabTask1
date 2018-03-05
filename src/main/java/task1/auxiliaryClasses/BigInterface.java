@@ -69,5 +69,8 @@ public interface BigInterface<E> {
      */
     E times(E other);
 
+    void inc();
+
+    void dec();
 
 }

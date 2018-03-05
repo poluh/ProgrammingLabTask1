@@ -137,6 +137,16 @@ public class BigFractional implements Comparable<BigFractional>, BigInterface<Bi
     }
 
     @Override
+    public void inc() {
+        this.whole.inc();
+    }
+
+    @Override
+    public void dec() {
+        this.whole.dec();
+    }
+
+    @Override
     public BigFractional minus(BigFractional other) {
         return this.minus(other, 0);
     }
