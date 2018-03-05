@@ -69,6 +69,11 @@ public interface BigInterface<E> {
      */
     E times(E other);
 
+    /**
+     * These methods simplify addition/subtraction
+     * when using a number as a counter.
+     * Inc() increases the number by one, Dec(), respectively, reduces.
+     */
     void inc();
 
     void dec();
