@@ -7,9 +7,9 @@ public class Main {
 
     public static void main(String[] args) {
         BigNumber first = new BigNumber("123456789");
-        BigNumber second = new BigNumber("2");
+        BigNumber second = new BigNumber("12340");
         BigNumber result = first.division(second);
         System.out.println(result);
-        System.out.println(123456789 >> 1);
+        System.out.println(123456789 >> 19);
     }
 }

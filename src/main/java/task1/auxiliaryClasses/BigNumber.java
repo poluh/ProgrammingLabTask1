@@ -35,8 +35,6 @@ public class BigNumber implements Comparable<BigNumber>, BigInterface<BigNumber>
     // Negative or positive number
     private int notation;
 
-    private static final BigNumber zero = new BigNumber("0");
-
 
     /**
      * One of the constructors for creating BigNumber.
@@ -119,7 +117,7 @@ public class BigNumber implements Comparable<BigNumber>, BigInterface<BigNumber>
 
     @Override
     public BigNumber copy() {
-        BigNumber answer = zero;
+        BigNumber answer = new BigNumber("0");
         answer.negative = this.negative;
         answer.number = this.number;
         return answer;
@@ -165,7 +163,7 @@ public class BigNumber implements Comparable<BigNumber>, BigInterface<BigNumber>
 
     public ArrayBigNumber appendZeros(int quantity, boolean atFirst) {
         String zeros = IntStream.range(0, quantity).mapToObj(i -> "0").collect(Collectors.joining());
-        BigNumber buf = zero;
+        BigNumber buf = new BigNumber("0");
         buf.setNumber(!atFirst ? this.getNumber().concat(zeros) : zeros.concat(this.getNumber()));
         return buf.number;
     }
@@ -207,7 +205,7 @@ public class BigNumber implements Comparable<BigNumber>, BigInterface<BigNumber>
         BigNumber firstBuf = delNegative(this);
         BigNumber secondBuf = delNegative(other);
         if (oneNegative) {
-            if (firstBuf.equals(secondBuf)) return zero;
+            if (firstBuf.equals(secondBuf)) return new BigNumber("0");
             if (firstBuf.compareTo(secondBuf) > 0) {
                 return new BigNumber(firstBuf.minus(secondBuf), this.negative);
             } else {
@@ -281,7 +279,7 @@ public class BigNumber implements Comparable<BigNumber>, BigInterface<BigNumber>
     }
 
     public BigNumber minus(BigNumber other, boolean factional) {
-        if (this.equals(other)) return zero;
+        if (this.equals(other)) return new BigNumber("0");
 
         boolean bothNegative = this.isNegative() && other.isNegative();
 
@@ -347,7 +345,7 @@ public class BigNumber implements Comparable<BigNumber>, BigInterface<BigNumber>
         secondBuf = minOf(firstBuf, secondBuf);
         firstBuf = buf;
 
-        BigNumber answer = zero;
+        BigNumber answer = new BigNumber("0");
         for (int i = firstBuf.columnBlocks() - 1; i >= 0; i--) {
             for (int j = secondBuf.columnBlocks() - 1; j >= 0; j--) {
                 answer = answer.plus(new BigNumber(String.valueOf(timesOneDigit(firstBuf.get(i), secondBuf.get(j)))));
@@ -358,10 +356,10 @@ public class BigNumber implements Comparable<BigNumber>, BigInterface<BigNumber>
     }
 
     public BigNumber division(BigNumber other) {
-        if (other.equals(zero)) throw new ArithmeticException("Division by zero. Just do not it. Okay?");
-        if (other.compareTo(this) > 0) return zero;
-        BigNumber answer = zero;
-        BigNumber thisBuf = this.copy();
+        if (other.equals(new BigNumber("0"))) throw new ArithmeticException("Division by zero. Just do not it. Okay?");
+        if (other.compareTo(this) > 0) return new BigNumber("0");
+        BigNumber answer = new BigNumber("0");
+        BigNumber otherBuf = other.copy();
         int columnBlocks = this.columnBlocks();
         if (other.columnBlocks() == 1) {
             ArrayBigNumber arrayBuf = new ArrayBigNumber();
@@ -370,8 +368,10 @@ public class BigNumber implements Comparable<BigNumber>, BigInterface<BigNumber>
             }
             return new BigNumber(arrayBuf, false);
         }
-        while (thisBuf.compareTo(other) > 0) {
-
+        // TODO for large number
+        while (otherBuf.compareTo(other) > 0) {
+            otherBuf.minus(other);
+            answer.inc();
         }
         return answer.times(other);
 
