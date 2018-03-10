@@ -1,6 +1,7 @@
 package task1.auxiliaryClasses;
 
 import org.junit.jupiter.api.Test;
+import task1.auxiliaryClasses.Collection.ArrayBigNumber;
 
 import java.math.BigInteger;
 import java.util.Random;
@@ -87,12 +88,18 @@ class BigNumberTest {
 
     @Test
     void times() {
-        assertEquals(new BigNumber("1013449554"), new BigNumber("1233").times(new BigNumber("821938")));
-        assertEquals(new BigNumber("1013449554"), new BigNumber("821938").times(new BigNumber("1233")));
-        assertEquals(new BigNumber("-5748348"), new BigNumber("5748348").times(new BigNumber("-1")));
+        assertEquals(new BigNumber("139537063824501590"),
+                new BigNumber("1234354334300012").times(new BigNumber("8212323242234938")));
+
+        assertEquals(new BigNumber("652481852001567960"),
+                new BigNumber("821938").times(new BigNumber("793832487933")));
+
+        assertEquals(new BigNumber("-10835247823489623489603245"),
+                new BigNumber("10835247823489623489603245").times(new BigNumber("-1")));
+
         assertEquals(new BigNumber("15129"), new BigNumber("-123").times(new BigNumber("-123")));
-        assertEquals(new BigNumber("1519325480"), new BigNumber("1231220").times(new BigNumber("1234")));
-        assertEquals(new BigNumber("1525209"), new BigNumber("1231").times(new BigNumber("1239")));
+
+        assertEquals(new BigNumber("-1525209"), new BigNumber("-1231").times(new BigNumber("1239")));
     }
 
     @Test
@@ -110,4 +117,10 @@ class BigNumberTest {
         assertEquals(bigNumber, otherBigNumber);
     }
 
+    @Test
+    void asCollection() {
+        ArrayBigNumber arrayBigNumber = new ArrayBigNumber();
+        arrayBigNumber.asCollection(123456789, 123);
+        assertTrue(new BigNumber("123456789123").equals(new BigNumber(arrayBigNumber, false)));
+    }
 }

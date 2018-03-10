@@ -1,6 +1,6 @@
 package task1.auxiliaryClasses;
 
-public interface BigInterface<E> {
+public interface BigUnifying<E> {
 
     /**
      * The method of copying a number. Called on BigNumber, returning an identical BigNumber

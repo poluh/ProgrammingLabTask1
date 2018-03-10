@@ -13,13 +13,13 @@ import java.util.regex.Pattern;
  * ensuring accuracy of calculations just up to 2,147,483,647 decimal places.
  */
 
-public class BigFractional implements Comparable<BigFractional>, BigInterface<BigFractional> {
+public class BigFractional implements Comparable<BigFractional>, BigUnifying<BigFractional> {
     private static Logger log = Logger.getLogger(BigFractional.class.getName());
 
     /**
      * My code is self-documenting.
      * <p>
-     * (Joke, lol. Check BigInterface)
+     * (Joke, lol. Check BigUnifying)
      * <p>
      * All non-unique methods are commented on there.
      * Here are designers and unique methods.
@@ -59,7 +59,6 @@ public class BigFractional implements Comparable<BigFractional>, BigInterface<Bi
      * @param whole    First part
      * @param fraction Second part
      */
-
     private void create(BigNumber whole, BigNumber fraction) {
         try {
             this.whole = whole;
@@ -106,7 +105,7 @@ public class BigFractional implements Comparable<BigFractional>, BigInterface<Bi
      * The value to which the result should be rounded.
      *
      * @param other  BigFraction for sum
-     * @param border Index of the rounding sign
+     * @param border accuracy rounding
      * @return new BigFraction
      */
     public BigFractional plus(BigFractional other, int border) {
@@ -156,7 +155,7 @@ public class BigFractional implements Comparable<BigFractional>, BigInterface<Bi
      * The value to which the result should be rounded.
      *
      * @param other  BigFraction for subtraction
-     * @param border Index of the rounding sign
+     * @param border accuracy rounding
      * @return new BigFraction
      */
     public BigFractional minus(BigFractional other, int border) {
@@ -185,7 +184,7 @@ public class BigFractional implements Comparable<BigFractional>, BigInterface<Bi
      * The value to which the result should be rounded.
      *
      * @param other  BigFraction for times
-     * @param border Index of the rounding sign
+     * @param border accuracy rounding
      * @return new BigFraction
      */
     public BigFractional times(BigFractional other, int border) {
@@ -234,7 +233,6 @@ public class BigFractional implements Comparable<BigFractional>, BigInterface<Bi
      *
      * @return new BigNumber
      */
-
     public BigNumber toBigNumber() {
         return new BigNumber(this.toString().replace(".", ""));
     }
@@ -246,13 +244,14 @@ public class BigFractional implements Comparable<BigFractional>, BigInterface<Bi
 
     @Override
     public boolean equals(Object obj) {
-        return this.fraction.equals(((BigFractional) obj).fraction) &&
+        return obj.getClass() == this.getClass() &&
+                this.fraction.equals(((BigFractional) obj).fraction) &&
                 this.whole.equals(((BigFractional) obj).whole);
     }
 
     @Override
     public int hashCode() {
-        return this.whole.hashCode() + this.fraction.hashCode() * this.toString().hashCode();
+        return this.whole.hashCode() + this.fraction.hashCode();
     }
 
 

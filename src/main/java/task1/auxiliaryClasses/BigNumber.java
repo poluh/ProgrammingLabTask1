@@ -25,16 +25,16 @@ import java.util.stream.IntStream;
  * PLEASE DO NOT KEEP THE NUMBER OF NUMBER, THE RESULT OF OPERATIONS ON WHICH CAN BE PLACED IN LONG OR INT
  */
 
-public class BigNumber implements Comparable<BigNumber>, BigInterface<BigNumber> {
+public class BigNumber implements Comparable<BigNumber>, BigUnifying<BigNumber> {
 
     private static Logger log = Logger.getLogger(BigFractional.class.getName());
 
-    private ArrayBigNumber number;
     // Main storage for number
-    private boolean negative;
+    private ArrayBigNumber number;
     // Negative or positive number
-    private int notation;
+    private boolean negative;
 
+    private int maxBlockDigits;
 
     /**
      * One of the constructors for creating BigNumber.
@@ -44,7 +44,6 @@ public class BigNumber implements Comparable<BigNumber>, BigInterface<BigNumber>
      *
      * @param number A string interpretation of a number with the corresponding character
      */
-
     public BigNumber(String number) {
         if (number.matches("-?\\d+")) {
             boolean negative = number.charAt(0) == '-';
@@ -65,7 +64,6 @@ public class BigNumber implements Comparable<BigNumber>, BigInterface<BigNumber>
      * @param number   A specialized class of storing numbers based on IntegerObject
      * @param negative Its sign (negative (false) or positive number (true))
      */
-
     public BigNumber(ArrayBigNumber number, boolean negative) {
         create(number, negative);
     }
@@ -76,7 +74,6 @@ public class BigNumber implements Comparable<BigNumber>, BigInterface<BigNumber>
      * @param forDel BigNumber for del negative
      * @return copy original BigNumber without negative
      */
-
     public static BigNumber delNegative(BigNumber forDel) {
         boolean forDelNegative = forDel.negative;
         forDel.delNegative();
@@ -103,12 +100,11 @@ public class BigNumber implements Comparable<BigNumber>, BigInterface<BigNumber>
      * @param number   The number you want to write
      * @param negative Its sign (negative (false) or positive number (true))
      */
-
     private void create(ArrayBigNumber number, boolean negative) {
         try {
             this.number = number;
             this.negative = negative;
-            this.notation = this.getArray().getNotation();
+            this.maxBlockDigits = this.getArray().getMaxBlockDigits();
             log.log(Level.FINE, "Create new BigNumber={0}", this);
         } catch (NumberFormatException ex) {
             log.log(Level.SEVERE, "Exception: Invalid format number({0}).", number);
@@ -157,14 +153,14 @@ public class BigNumber implements Comparable<BigNumber>, BigInterface<BigNumber>
      * as well as multiplication by 10 to some extent. Returns new ArrayBigNumber with zeros.
      *
      * @param quantity Number of zeros to add
-     * @param atFirst  Add zeros to the left or to the right of the number
+     * @param toLeft   Add zeros to the left or to the right of the number
      * @return new ArrayBigNumber
      */
 
-    public ArrayBigNumber appendZeros(int quantity, boolean atFirst) {
+    public ArrayBigNumber appendZeros(int quantity, boolean toLeft) {
         String zeros = IntStream.range(0, quantity).mapToObj(i -> "0").collect(Collectors.joining());
         BigNumber buf = new BigNumber("0");
-        buf.setNumber(!atFirst ? this.getNumber().concat(zeros) : zeros.concat(this.getNumber()));
+        buf.setNumber(!toLeft ? this.getNumber().concat(zeros) : zeros.concat(this.getNumber()));
         return buf.number;
     }
 
@@ -199,7 +195,6 @@ public class BigNumber implements Comparable<BigNumber>, BigInterface<BigNumber>
     }
 
     public BigNumber plus(BigNumber other, boolean fraction) {
-
         boolean bothNegative = this.isNegative() && other.isNegative();
         boolean oneNegative = this.isNegative() ^ other.isNegative();
         BigNumber firstBuf = delNegative(this);
@@ -224,8 +219,8 @@ public class BigNumber implements Comparable<BigNumber>, BigInterface<BigNumber>
             int remember = 0;
             for (int i = columnBlocks - 1; i >= 0; i--) {
                 int addedNum = firstBuf.get(i) + secondBuf.get(i) + remember;
-                if (addedNum > notation) {
-                    addedNum -= notation;
+                if (addedNum > maxBlockDigits) {
+                    addedNum -= maxBlockDigits;
                     remember = 1;
                 } else {
                     remember = 0;
@@ -233,7 +228,7 @@ public class BigNumber implements Comparable<BigNumber>, BigInterface<BigNumber>
                 numberBuf.add(addedNum);
             }
             numberBuf.add(remember == 1 ? "1" : "");
-            numberBuf.setFlag(Math.min(this.getArray().getFlag(), other.getArray().getFlag()));
+            numberBuf.setLengthLastBlock(Math.min(this.getArray().getLengthLastBlock(), other.getArray().getLengthLastBlock()));
             numberBuf.reverse();
             return new BigNumber(fraction ? numberBuf : new ArrayBigNumber(removeZeros(numberBuf.toString())),
                     bothNegative);
@@ -242,19 +237,18 @@ public class BigNumber implements Comparable<BigNumber>, BigInterface<BigNumber>
 
     @Override
     public void inc() {
-        this.smallOperation(true);
+        this.lastBlockOperation(true);
     }
 
     @Override
     public void dec() {
-        this.smallOperation(false);
+        this.lastBlockOperation(false);
     }
 
-
-    private void smallOperation(boolean operator) {
+    private void lastBlockOperation(boolean operator) {
         ArrayBigNumber thisArray = this.getArray();
         int lastBlock = thisArray.get(thisArray.columnBlocks() - 1);
-        if (lastBlock < this.notation - (operator ? 1 : 0)) {
+        if (lastBlock < this.maxBlockDigits - (operator ? 1 : 0)) {
             thisArray.set(thisArray.columnBlocks() - 1, lastBlock + (operator ? 1 : -1));
         } else {
             if (operator) {
@@ -301,7 +295,7 @@ public class BigNumber implements Comparable<BigNumber>, BigInterface<BigNumber>
                 for (int i = columnBlocks - 1; i >= 0; i--) {
                     int addedNum = firstBuf.get(i) - secondBuf.get(i) - remember;
                     if (addedNum < 0) {
-                        addedNum += this.notation;
+                        addedNum += this.maxBlockDigits;
                         remember = 1;
                     } else {
                         remember = 0;
@@ -325,18 +319,19 @@ public class BigNumber implements Comparable<BigNumber>, BigInterface<BigNumber>
     private ArrayBigNumber timesOneDigit(int first, int second) {
         if (first == 1) return new ArrayBigNumber(String.valueOf(first));
         if (first == 0) return appendZeros(1, false);
-
-        return new ArrayBigNumber(String.valueOf((long) first * (long) second));
+        Long firstL = (long) first;
+        Long secondL = (long) second;
+        return new ArrayBigNumber(String.valueOf(firstL * secondL));
     }
 
     @Override
     public BigNumber times(BigNumber other) {
         boolean negative = this.isNegative() ^ other.isNegative();
 
-        Pattern pattern = Pattern.compile("1(0)+");
+        Pattern pattern = Pattern.compile("-?1(0)*");
         if (pattern.matcher(this.toString()).matches() || pattern.matcher(other.toString()).matches()) {
             BigNumber whoMatches = pattern.matcher(this.toString()).matches() ? this : other;
-            return new BigNumber(appendZeros(whoMatches.length(), false), negative);
+            return new BigNumber(appendZeros(whoMatches.length() - 1, false), negative);
         }
 
         BigNumber firstBuf = delNegative(this);

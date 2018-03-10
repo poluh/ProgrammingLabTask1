@@ -54,6 +54,6 @@ public interface CollectionBigNumber<E> {
      *
      * @param values args
      */
-    void asCollection(E... values);
+    void asCollection(int... values);
 
 }
