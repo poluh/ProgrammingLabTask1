@@ -77,6 +77,7 @@ class BigNumberTest {
 
     @Test
     void minus() {
+
         assertEquals(new BigNumber("0"), new BigNumber("938374").minus(new BigNumber("938374")));
         assertEquals(new BigNumber("92814080"), new BigNumber("93248423").minus(new BigNumber("434343")));
         assertEquals(new BigNumber("-88923122"), new BigNumber("-34234").minus(new BigNumber("88888888")));
