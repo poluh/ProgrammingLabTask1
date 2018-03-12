@@ -345,14 +345,14 @@ public class BigNumber implements Comparable<BigNumber>, BigUnifying<BigNumber> 
         int maxBlockDigits = this.maxBlockDigits;
         int addedBuf = 0;
         ArrayBigNumber answer = new ArrayBigNumber();
-        for (int i = answerLength; i >= 0; i--) {
+        for (int internalIndex = answerLength; internalIndex >= 0; internalIndex--) {
             long buffer = 0L;
-            for (int j = otherBuf.columnBlocks() - 1; j >= 0; j--) {
-                buffer += intermediatesCollection[j][i];
+            for (int externalIndex = otherBuf.columnBlocks() - 1; externalIndex >= 0; externalIndex--) {
+                buffer += intermediatesCollection[externalIndex][internalIndex];
             }
             buffer += addedBuf;
-            if (buffer > maxBlockDigits) {
-                addedBuf = (int) (buffer / (maxBlockDigits / 10));
+            if (buffer >= maxBlockDigits) {
+                addedBuf = (int) (buffer / (maxBlockDigits));
                 buffer %= maxBlockDigits;
             } else {
                 addedBuf = 0;
@@ -360,7 +360,6 @@ public class BigNumber implements Comparable<BigNumber>, BigUnifying<BigNumber> 
             answer.add((int) buffer);
         }
         answer.reverse();
-        System.out.println(answer);
         answer = new ArrayBigNumber(removeZeros(answer.toString()));
         return new BigNumber(answer, this.negative ^ other.negative);
     }
