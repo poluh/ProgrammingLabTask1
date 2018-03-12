@@ -317,14 +317,6 @@ public class BigNumber implements Comparable<BigNumber>, BigUnifying<BigNumber> 
 
     }
 
-    private ArrayBigNumber timesOneDigit(int first, int second) {
-        if (first == 1) return new ArrayBigNumber(String.valueOf(first));
-        if (first == 0) return appendZeros(1, false);
-        Long firstL = (long) first;
-        Long secondL = (long) second;
-        return new ArrayBigNumber(String.valueOf(firstL * secondL));
-    }
-
     @Override
     public BigNumber times(BigNumber other) {
         boolean negative = this.isNegative() ^ other.isNegative();
@@ -339,38 +331,38 @@ public class BigNumber implements Comparable<BigNumber>, BigUnifying<BigNumber> 
         BigNumber otherBuf = other.copy();
 
         int shift = 0;
-        long[] answerBuf = new long[thisBuf.columnBlocks() + otherBuf.columnBlocks()];
-        long[][] intermediates = new long[otherBuf.columnBlocks()][thisBuf.columnBlocks() + otherBuf.columnBlocks()];
+        int answerLength = thisBuf.columnBlocks() + otherBuf.columnBlocks() - 1;
+        long[][] intermediatesCollection =
+                new long[otherBuf.columnBlocks()][thisBuf.columnBlocks() + otherBuf.columnBlocks()];
         for (int i = otherBuf.columnBlocks() - 1; i >= 0; i--) {
             for (int j = thisBuf.columnBlocks() - 1; j >= 0; j--) {
                 long intermediate = (long) thisBuf.get(j) * (long) otherBuf.get(i);
-                intermediates[otherBuf.columnBlocks() - i - 1][answerBuf.length - 1 - j - shift] = intermediate;
+                intermediatesCollection[otherBuf.columnBlocks() - i - 1][answerLength - j - shift] = intermediate;
             }
             shift++;
         }
-        System.out.println(Arrays.deepToString(intermediates));
-        System.out.println(Arrays.toString(answerBuf));
 
         int maxBlockDigits = this.maxBlockDigits;
-
         int addedBuf = 0;
-        for (int i = answerBuf.length - 1; i >= 0; i--) {
+        ArrayBigNumber answer = new ArrayBigNumber();
+        for (int i = answerLength; i >= 0; i--) {
             long buffer = 0L;
             for (int j = otherBuf.columnBlocks() - 1; j >= 0; j--) {
-                buffer += intermediates[j][i];
+                buffer += intermediatesCollection[j][i];
             }
             buffer += addedBuf;
             if (buffer > maxBlockDigits) {
-                addedBuf = (int) (buffer / maxBlockDigits);
+                addedBuf = (int) (buffer / (maxBlockDigits / 10));
                 buffer %= maxBlockDigits;
             } else {
                 addedBuf = 0;
             }
-            answerBuf[i] = buffer;
+            answer.add((int) buffer);
         }
-        System.out.println(Arrays.toString(answerBuf));
-
-        return new BigNumber("0");
+        answer.reverse();
+        System.out.println(answer);
+        answer = new ArrayBigNumber(removeZeros(answer.toString()));
+        return new BigNumber(answer, this.negative ^ other.negative);
     }
 
     public BigNumber division(BigNumber other) {

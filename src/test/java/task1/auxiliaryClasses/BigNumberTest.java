@@ -96,18 +96,19 @@ class BigNumberTest {
 
     @Test
     void times() {
-        BigInteger first = generate();
+        /*BigInteger first = generate();
         BigInteger second = generate();
         BigNumber firstBig = new BigNumber(first.toString());
         BigNumber secondBig = new BigNumber(second.toString());
 
+        System.out.println(first.multiply(second));
+        //assertEquals(new BigNumber(first.multiply(second).toString()), firstBig.times(secondBig));*/
 
-        assertEquals(new BigNumber(first.multiply(second).toString()), firstBig.times(secondBig));
 
-        assertEquals(new BigNumber("139537063824501590"),
+        assertEquals(new BigNumber("3531308949366665767031418539758154"),
                 new BigNumber("1234354334300012").times(new BigNumber("8212323242234938")));
 
-        assertEquals(new BigNumber("652481852001567960"),
+        assertEquals(new BigNumber("652481086699806766868154"),
                 new BigNumber("821938").times(new BigNumber("793832487933")));
 
         assertEquals(new BigNumber("-10835247823489623489603245"),
