@@ -2,6 +2,7 @@ package task1.auxiliaryClasses;
 
 import task1.auxiliaryClasses.Collection.ArrayBigNumber;
 
+import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
@@ -334,20 +335,42 @@ public class BigNumber implements Comparable<BigNumber>, BigUnifying<BigNumber> 
             return new BigNumber(appendZeros(whoMatches.length() - 1, false), negative);
         }
 
-        BigNumber firstBuf = delNegative(this);
-        BigNumber secondBuf = delNegative(other);
-        BigNumber buf = maxOf(firstBuf, secondBuf);
-        secondBuf = minOf(firstBuf, secondBuf);
-        firstBuf = buf;
+        BigNumber thisBuf = this.copy();
+        BigNumber otherBuf = other.copy();
 
-        BigNumber answer = new BigNumber("0");
-        for (int i = firstBuf.columnBlocks() - 1; i >= 0; i--) {
-            for (int j = secondBuf.columnBlocks() - 1; j >= 0; j--) {
-                answer = answer.plus(new BigNumber(String.valueOf(timesOneDigit(firstBuf.get(i), secondBuf.get(j)))));
+        int shift = 0;
+        long[] answerBuf = new long[thisBuf.columnBlocks() + otherBuf.columnBlocks()];
+        long[][] intermediates = new long[otherBuf.columnBlocks()][thisBuf.columnBlocks() + otherBuf.columnBlocks()];
+        for (int i = otherBuf.columnBlocks() - 1; i >= 0; i--) {
+            for (int j = thisBuf.columnBlocks() - 1; j >= 0; j--) {
+                long intermediate = (long) thisBuf.get(j) * (long) otherBuf.get(i);
+                intermediates[otherBuf.columnBlocks() - i - 1][answerBuf.length - 1 - j - shift] = intermediate;
             }
+            shift++;
         }
-        answer.setNegative(negative);
-        return answer;
+        System.out.println(Arrays.deepToString(intermediates));
+        System.out.println(Arrays.toString(answerBuf));
+
+        int maxBlockDigits = this.maxBlockDigits;
+
+        int addedBuf = 0;
+        for (int i = answerBuf.length - 1; i >= 0; i--) {
+            long buffer = 0L;
+            for (int j = otherBuf.columnBlocks() - 1; j >= 0; j--) {
+                buffer += intermediates[j][i];
+            }
+            buffer += addedBuf;
+            if (buffer > maxBlockDigits) {
+                addedBuf = (int) (buffer / maxBlockDigits);
+                buffer %= maxBlockDigits;
+            } else {
+                addedBuf = 0;
+            }
+            answerBuf[i] = buffer;
+        }
+        System.out.println(Arrays.toString(answerBuf));
+
+        return new BigNumber("0");
     }
 
     public BigNumber division(BigNumber other) {

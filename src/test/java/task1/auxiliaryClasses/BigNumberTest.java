@@ -10,8 +10,9 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class BigNumberTest {
 
-    private BigInteger generate(int seed) {
-        return new BigInteger(50, 15, new Random(seed));
+    private BigInteger generate() {
+        Random rnd = new Random();
+        return new BigInteger(2000, 1, rnd);
     }
 
 
@@ -56,13 +57,12 @@ class BigNumberTest {
 
     @Test
     void plus() {
+        BigInteger first = generate();
+        BigInteger second = generate();
+        BigNumber firstBig = new BigNumber(first.toString());
+        BigNumber secondBig = new BigNumber(second.toString());
 
-        assertEquals(new BigNumber(generate(8).toString())
-                        .plus(new BigNumber(generate(14).toString())).toString(),
-                generate(8).add(generate(14)).toString());
-        assertEquals(new BigNumber(generate(8).toString())
-                        .plus(new BigNumber(generate(6).toString())).toString(),
-                generate(8).add(generate(6)).toString());
+        assertEquals(new BigNumber(first.add(second).toString()), firstBig.plus(secondBig));
         assertEquals(new BigNumber("1876748"), new BigNumber("938374").plus(new BigNumber("938374")));
         assertEquals(new BigNumber("93682766"), new BigNumber("93248423").plus(new BigNumber("434343")));
         assertEquals(new BigNumber("88854654"), new BigNumber("-34234").plus(new BigNumber("88888888")));
@@ -77,7 +77,14 @@ class BigNumberTest {
 
     @Test
     void minus() {
+        BigInteger first = generate();
+        BigInteger second = generate();
+        BigNumber firstBig = new BigNumber(first.toString());
+        BigNumber secondBig = new BigNumber(second.toString());
+        System.out.println(first);
+        System.out.println(second);
 
+        assertEquals(new BigNumber(first.remainder(second).toString()), firstBig.minus(secondBig));
         assertEquals(new BigNumber("0"), new BigNumber("938374").minus(new BigNumber("938374")));
         assertEquals(new BigNumber("92814080"), new BigNumber("93248423").minus(new BigNumber("434343")));
         assertEquals(new BigNumber("-88923122"), new BigNumber("-34234").minus(new BigNumber("88888888")));
@@ -89,6 +96,14 @@ class BigNumberTest {
 
     @Test
     void times() {
+        BigInteger first = generate();
+        BigInteger second = generate();
+        BigNumber firstBig = new BigNumber(first.toString());
+        BigNumber secondBig = new BigNumber(second.toString());
+
+
+        assertEquals(new BigNumber(first.multiply(second).toString()), firstBig.times(secondBig));
+
         assertEquals(new BigNumber("139537063824501590"),
                 new BigNumber("1234354334300012").times(new BigNumber("8212323242234938")));
 

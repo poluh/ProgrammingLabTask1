@@ -48,7 +48,7 @@ public class BigFractional implements Comparable<BigFractional>, BigUnifying<Big
         } else if (number.matches("\\d+")) {
             create(new BigNumber(number), new BigNumber("0"));
         } else {
-            throw new NumberFormatException("Invalid format.");
+            throw new NumberFormatException("Invalid format");
         }
     }
 
@@ -66,7 +66,7 @@ public class BigFractional implements Comparable<BigFractional>, BigUnifying<Big
             log.log(Level.INFO, "Create new BigFractional = {0}", this);
         } catch (NumberFormatException ex) {
             String[] strings = {whole.toString(), fraction.toString()};
-            log.log(Level.SEVERE, "Exception: Invalid format number({0}.{1}).", strings);
+            log.log(Level.SEVERE, "Exception: Invalid format number({0}.{1})", strings);
         }
     }
 
@@ -82,7 +82,7 @@ public class BigFractional implements Comparable<BigFractional>, BigUnifying<Big
 
     @Override
     public void setNegative(boolean negative) {
-        log.fine("Change negative.");
+        log.fine("Change negative");
         this.whole.setNegative(negative);
     }
 
@@ -105,20 +105,20 @@ public class BigFractional implements Comparable<BigFractional>, BigUnifying<Big
      * The value to which the result should be rounded.
      *
      * @param other  BigFraction for sum
-     * @param border accuracy rounding
+     * @param border Accuracy rounding
      * @return new BigFraction
      */
     public BigFractional plus(BigFractional other, int border) {
         if (this.whole.isNegative() || other.whole.isNegative()) {
             if (this.whole.isNegative() && !other.whole.isNegative()) {
                 String[] strings = {other.toString(), this.toString()};
-                log.log(Level.INFO, "Transformation of expression= {0} - {1}", strings);
+                log.log(Level.INFO, "Transformation of expression = {0} - {1}", strings);
                 BigFractional thisBuf = this.copy();
                 thisBuf.whole.delNegative();
                 return other.minus(thisBuf, border);
             } else if (!this.whole.isNegative() && other.whole.isNegative()) {
                 String[] strings = {this.toString(), other.toString()};
-                log.log(Level.INFO, "Transformation of expression= {0} - {1}", strings);
+                log.log(Level.INFO, "Transformation of expression = {0} - {1}", strings);
                 return this.minus(other, border);
             }
         }
@@ -205,7 +205,7 @@ public class BigFractional implements Comparable<BigFractional>, BigUnifying<Big
         BigNumber times = imaginaryThis.times(imaginaryOther);
 
         String timesStr = times.toString();
-        log.log(Level.INFO, "Number without dot={0}", timesStr);
+        log.log(Level.INFO, "Number without dot = {0}", timesStr);
 
         int tailLength = times.length() - (this.fraction.length() + other.fraction.length() + 1);
 
@@ -222,7 +222,7 @@ public class BigFractional implements Comparable<BigFractional>, BigUnifying<Big
         BigFractional answer =
                 new BigFractional(wholePart.toString(), fraction.toString()).round(border);
         answer.setNegative(times.isNegative());
-        log.log(Level.INFO, "Result={0}", answer.toString());
+        log.log(Level.INFO, "Result = {0}", answer.toString());
         return answer;
     }
 
