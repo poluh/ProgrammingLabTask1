@@ -2,7 +2,6 @@ package task1.auxiliaryClasses;
 
 import task1.auxiliaryClasses.Collection.ArrayBigNumber;
 
-import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
@@ -348,7 +347,7 @@ public class BigNumber implements Comparable<BigNumber>, BigUnifying<BigNumber> 
         for (int internalIndex = answerLength; internalIndex >= 0; internalIndex--) {
             long buffer = 0L;
             for (int externalIndex = otherBuf.columnBlocks() - 1; externalIndex >= 0; externalIndex--) {
-                buffer += intermediatesCollection[externalIndex][internalIndex];
+                buffer = Math.addExact(buffer, intermediatesCollection[externalIndex][internalIndex]);
             }
             buffer += addedBuf;
             if (buffer >= maxBlockDigits) {

@@ -12,7 +12,7 @@ class BigNumberTest {
 
     private BigInteger generate() {
         Random rnd = new Random();
-        return new BigInteger(2000, 1, rnd);
+        return new BigInteger(30, 100, rnd);
     }
 
 
@@ -96,13 +96,13 @@ class BigNumberTest {
 
     @Test
     void times() {
-        /*BigInteger first = generate();
+        BigInteger first = generate();
         BigInteger second = generate();
         BigNumber firstBig = new BigNumber(first.toString());
         BigNumber secondBig = new BigNumber(second.toString());
 
         System.out.println(first.multiply(second));
-        //assertEquals(new BigNumber(first.multiply(second).toString()), firstBig.times(secondBig));*/
+        assertEquals(new BigNumber(first.multiply(second).toString()), firstBig.times(secondBig));
 
 
         assertEquals(new BigNumber("3531308949366665767031418539758154"),
